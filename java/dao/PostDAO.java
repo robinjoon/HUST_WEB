@@ -1,0 +1,323 @@
+package dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+
+import db.DB;
+import vo.PostVO;
+
+public class PostDAO {
+	private static PostDAO dao;
+	
+	private PostDAO() {}
+	
+	public static PostDAO getinstance() {
+		if(dao==null) {
+			dao = new PostDAO();
+		}
+		return dao;
+	}
+	
+	public boolean write_post(PostVO post) { 
+		// 게시글 쓰기. 게시글 작성 성공여부를 반환함.
+		Connection conn = DB.getConnection();
+		PreparedStatement pstmt = null;
+		try {
+			String sql = "insert into posts (writer,title,content,is_notice,origin_file_name,system_file_name,board_name)";
+			sql = sql +" values(?,?,?,?,?,?,?)";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, post.getWriter());
+			pstmt.setString(2, post.getTitle());
+			pstmt.setString(3, post.getContent());
+			pstmt.setBoolean(4, post.isIs_notice());
+			pstmt.setString(5, post.getOrigin_file_name());
+			pstmt.setString(6, post.getSystem_file_name());
+			pstmt.setString(7, post.getBoard_name());
+			if(pstmt.executeUpdate()==1) {
+				return true;
+			}else {
+				return false;
+			}
+		}catch(Exception e) {
+			System.err.println(e);
+			return false;
+		}
+	}
+	public int write_post_v2(PostVO post) { 
+		// 게시글 쓰기. 작성된 게시글의 게시글번호를 반환함.
+		Connection conn = DB.getConnection();
+		PreparedStatement pstmt = null;
+		try {
+			String sql = "insert into posts (writer,title,content,is_notice,origin_file_name,system_file_name,board_name)";
+			sql = sql +" values(?,?,?,?,?,?,?)";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, post.getWriter());
+			pstmt.setString(2, post.getTitle());
+			pstmt.setString(3, post.getContent());
+			pstmt.setBoolean(4, post.isIs_notice());
+			pstmt.setString(5, post.getOrigin_file_name());
+			pstmt.setString(6, post.getSystem_file_name());
+			pstmt.setString(7, post.getBoard_name());
+			if(pstmt.executeUpdate()==1) {
+				String sql2 = "select pid from posts where writer=? and title=? and content=? and is_notice=?";
+				sql2 += " and origin_file_name=? and system_file_name=? and board_name =?";
+				PreparedStatement pstmt2;
+				pstmt2 = conn.prepareStatement(sql2);
+				pstmt2.setString(1, post.getWriter());
+				pstmt2.setString(2, post.getTitle());
+				pstmt2.setString(3, post.getContent());
+				pstmt2.setBoolean(4, post.isIs_notice());
+				pstmt2.setString(5, post.getOrigin_file_name());
+				pstmt2.setString(6, post.getSystem_file_name());
+				pstmt2.setString(7, post.getBoard_name());
+				ResultSet rs = pstmt2.executeQuery();
+				int ret = -1;
+				while(rs.next()) {
+					ret = rs.getInt("pid");
+				}
+				return ret;
+			}else {
+				return -1;
+			}
+		}catch(Exception e) {
+			System.err.println(e);
+			return -1;
+		}
+	}
+	/*public boolean write_post2(PostVO post) { // 게시글 쓰기.
+		Connection conn = DB.getConnection();
+		PreparedStatement pstmt = null;
+		try {
+			String sql = "insert into posts (writer,title,content,is_notice,origin_file_name,system_file_name,board_name,pid,write_date)";
+			sql = sql +" values(?,?,?,?,?,?,?,?,?)";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, post.getWriter());
+			pstmt.setString(2, post.getTitle());
+			pstmt.setString(3, post.getContent());
+			pstmt.setBoolean(4, post.isIs_notice());
+			pstmt.setString(5, post.getOrigin_file_name());
+			pstmt.setString(6, post.getSystem_file_name());
+			pstmt.setString(7, post.getBoard_name());
+			pstmt.setInt(8, post.getPid());
+			pstmt.setTimestamp(9, post.getWrite_date());
+			pstmt.executeUpdate();
+			return true;
+		}catch(Exception e) {
+			System.err.println(e);
+			return false;
+		}
+	}*/
+	
+	public boolean delete_post(PostVO post) { // 게시글 삭제. 댓글 고려 X 수정필요
+		Connection conn = DB.getConnection();
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = conn.prepareStatement("update posts set blind=1 where pid = ? and writer = ?");
+			pstmt.setInt(1, post.getPid());
+			pstmt.setString(2, post.getWriter());
+			pstmt.executeUpdate();
+			System.out.println("pid : "+post.getPid());
+			System.out.println("writer : "+post.getWriter());
+			return true;
+		}catch(Exception e) {
+			System.err.println(e);
+			return false;
+		}
+	}
+	
+	public boolean update_post(PostVO post) { // 게시글 업데이트. 보안고려X, 수정필요
+		Connection conn = DB.getConnection();
+		PreparedStatement pstmt = null;
+		try {
+			String sql = "update posts set title = ?,content = ?,board_name = ?,is_notice =? where pid = ? and writer = ?";
+			System.out.println(sql);
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, post.getTitle());
+			pstmt.setString(2, post.getContent());
+			pstmt.setString(3, post.getBoard_name());
+			pstmt.setBoolean(4, post.isIs_notice());
+			//pstmt.setTimestamp(4, post.getWrite_date());
+			pstmt.setInt(5, post.getPid());
+			pstmt.setString(6, post.getWriter());
+			pstmt.executeUpdate();
+			return true;
+		}catch(Exception e) {
+			System.err.println(e);
+			return false;
+		}
+	}
+
+	public PostVO getPost(int pid) { // 게시글 하나 불러오기. 
+		Connection conn = DB.getConnection();
+		PreparedStatement pstmt = null;
+		PostVO post = new PostVO();
+		try {
+			String sql = "select * from posts where pid = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, pid);
+			
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				post.setPid(rs.getInt("pid"));
+				post.setWriter(rs.getString("writer"));
+				post.setBoard_name(rs.getString("board_name"));
+				post.setTitle(rs.getString("title"));
+				post.setContent(rs.getString("content"));
+				post.setWrite_date(rs.getTimestamp("write_date"));
+				post.setIs_notice(rs.getBoolean("is_notice"));
+				post.setViews(rs.getLong("views"));
+				post.setOrigin_file_name(rs.getString("origin_file_name"));
+				post.setSystem_file_name(rs.getString("system_file_name"));
+				post.setBlind(rs.getBoolean("blind"));
+			}
+			return post;
+		}catch(Exception e) {
+			System.err.println(e);
+			return null;
+		}
+	}
+
+	public ArrayList<PostVO> getPostlist(String bname, Integer page) {
+		ArrayList<PostVO> postlist = new ArrayList<PostVO>();
+		Connection conn = DB.getConnection();
+		PreparedStatement pstmt = null;
+		try {
+			String sql = "select * from posts where blind=0 and board_name=?  order by pid desc";
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, bname);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				PostVO post = new PostVO();
+				post.setPid(rs.getInt("pid"));
+				post.setWriter(rs.getString("writer"));
+				post.setBoard_name(bname);
+				post.setTitle(rs.getString("title"));
+				post.setContent(rs.getString("content"));
+				post.setWrite_date(rs.getTimestamp("write_date"));
+				post.setIs_notice(rs.getBoolean("is_notice"));
+				post.setViews(rs.getLong("views"));
+				post.setOrigin_file_name(rs.getString("origin_file_name"));
+				post.setSystem_file_name(rs.getString("system_file_name"));
+				post.setBlind(rs.getBoolean("blind"));
+				postlist.add(post);
+			}
+			return postlist;
+		} catch (Exception e) {
+			System.err.println(e);
+			return postlist;
+		}
+	}
+	
+	public ArrayList<PostVO> getNoticeBoard(){
+		Connection conn = DB.getConnection();
+		PreparedStatement pstmt = null;
+		ArrayList<PostVO> list = new ArrayList<PostVO>();
+		try {
+			String sql = "select * from posts where blind=0 and board_name=\"공지게시판\" order by write_date desc limit 5";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				PostVO post = new PostVO();
+				post.setPid(rs.getInt("pid"));
+				post.setWriter(rs.getString("writer"));
+				post.setBoard_name("공지게시판");
+				post.setTitle(rs.getString("title"));
+				post.setContent(rs.getString("content"));
+				post.setWrite_date(rs.getTimestamp("write_date"));
+				post.setIs_notice(rs.getBoolean("is_notice"));
+				post.setViews(rs.getLong("views"));
+				post.setOrigin_file_name(rs.getString("origin_file_name"));
+				post.setSystem_file_name(rs.getString("system_file_name"));
+				post.setBlind(rs.getBoolean("blind"));
+				list.add(post);
+			}
+			return list;
+		}catch(Exception e) {
+			System.err.println(e);
+			return null;
+		}
+	}
+	public ArrayList<PostVO> getFreeBoard(){
+		Connection conn = DB.getConnection();
+		PreparedStatement pstmt = null;
+		ArrayList<PostVO> list = new ArrayList<PostVO>();
+		try {
+			String sql = "select * from posts where blind=0 and board_name=\"자유게시판\" order by write_date desc limit 5";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				PostVO post = new PostVO();
+				post.setPid(rs.getInt("pid"));
+				post.setWriter(rs.getString("writer"));
+				post.setBoard_name("자유게시판");
+				post.setTitle(rs.getString("title"));
+				post.setContent(rs.getString("content"));
+				post.setWrite_date(rs.getTimestamp("write_date"));
+				post.setIs_notice(rs.getBoolean("is_notice"));
+				post.setViews(rs.getLong("views"));
+				post.setOrigin_file_name(rs.getString("origin_file_name"));
+				post.setSystem_file_name(rs.getString("system_file_name"));
+				post.setBlind(rs.getBoolean("blind"));
+				list.add(post);
+			}
+			return list;
+		}catch(Exception e) {
+			System.err.println(e);
+			return null;
+		}
+	}
+	
+	public ArrayList<PostVO> getMyPosts(String writer){
+		Connection conn = DB.getConnection();
+		PreparedStatement pstmt = null;
+		ArrayList<PostVO> list = new ArrayList<PostVO>();
+		try {
+			String sql = "select * from posts where writer = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, writer);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				PostVO post = new PostVO();
+				post.setPid(rs.getInt("pid"));
+				post.setWriter(rs.getString("writer"));
+				post.setBoard_name(rs.getString("board_name"));
+				post.setTitle(rs.getString("title"));
+				post.setContent(rs.getString("content"));
+				post.setWrite_date(rs.getTimestamp("write_date"));
+				post.setIs_notice(rs.getBoolean("is_notice"));
+				post.setViews(rs.getLong("views"));
+				post.setOrigin_file_name(rs.getString("origin_file_name"));
+				post.setSystem_file_name(rs.getString("system_file_name"));
+				post.setBlind(rs.getBoolean("blind"));
+				list.add(post);
+			}
+			return list;
+		}catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public boolean increase_views(int pid) {
+		Connection conn = DB.getConnection();
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = conn.prepareStatement("update posts set views = views+1 where pid= ?");
+			pstmt.setInt(1, pid);
+			pstmt.executeUpdate();
+			return true;
+		}catch(Exception e) {
+			System.err.println(e);
+			return false;
+		}
+	}
+}

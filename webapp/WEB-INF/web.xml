@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" id="WebApp_ID" version="4.0">
+  <session-config>
+    <session-timeout>30</session-timeout>
+  </session-config>
+  <display-name>HUST_WEB</display-name>
+  <servlet>
+    <servlet-name>front</servlet-name>
+    <servlet-class>controller.FrontController</servlet-class>
+    <init-param>
+      <param-name>charset</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>front</servlet-name>
+    <url-pattern>*.do</url-pattern>
+  </servlet-mapping>
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+	<error-page>
+		<error-code>400</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>401</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>402</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>403</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>405</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>406</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>407</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>408</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>409</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>500</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>501</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>502</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>503</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>504</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page><error-page>
+		<error-code>505</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>506</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>507</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>508</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>509</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>510</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>520</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>598</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<error-page>
+		<error-code>599</error-code>
+		<location>/images/error_페이지를_불러올_수_없습니다.png</location>
+	</error-page>
+	<!--security-constraint>
+
+    <web-resource-collection>
+
+        <web-resource-name>SSL Forward</web-resource-name>
+
+        <url-pattern>/*</url-pattern>
+
+    </web-resource-collection>
+
+    <user-data-constraint>
+
+        <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+
+    </user-data-constraint>
+
+</security-constraint-->
+</web-app>
