@@ -14,9 +14,9 @@ import service.PostService;
 import tools.HttpUtil;
 import tools.Secure;
 import tools.Sessions;
-import vo.CommentVO;
-import vo.MemberVO;
-import vo.PostVO;
+import vo.Comment;
+import vo.Member;
+import vo.Post;
 
 import java.net.*;
 import java.security.NoSuchAlgorithmException;
@@ -96,7 +96,7 @@ public class MemberController implements Controller {
 			HttpUtil.forward(request, response, "/WEB-INF/pages/fail.jsp");
 			return;
 		}
-		MemberVO member = new MemberVO(id,pw,name,birthY,admissionY,joinY,phone,email,scholastic,school_year,interest,address,address_now,0,etc,0);
+		Member member = new Member(id,pw,name,birthY,admissionY,joinY,phone,email,scholastic,school_year,interest,address,address_now,0,etc,0);
 		member.setMypost_comment_noti_allow(mypost_comment_noti_allow);
 		member.setMycomment_comment_noti_allow(mycomment_comment_noti_allow);
 		member.setCall_noti_allow(call_noti_allow);
@@ -114,8 +114,8 @@ public class MemberController implements Controller {
 		HttpSession session = request.getSession();
 		Integer permission = (int)session.getAttribute("permission");
 		if(permission>=1) {
-			MemberVO member = MemberService.getMember(memberid);
-			ArrayList<MemberVO> list = new ArrayList<MemberVO>();
+			Member member = MemberService.getMember(memberid);
+			ArrayList<Member> list = new ArrayList<Member>();
 			list.add(member);
 			request.setAttribute("memberlist", list);
 			HttpUtil.forward(request, response, "/WEB-INF/pages/memberlist.jsp");
@@ -127,9 +127,9 @@ public class MemberController implements Controller {
 		HttpSession session = request.getSession();
 		String id = (String)session.getAttribute("id");
 		if(id!=null) { // 로그인 확인
-			MemberVO member = MemberService.getMember(id);
-			ArrayList<PostVO> list = PostService.getMyPosts(id);
-			ArrayList<CommentVO> clist = CommentService.getMyComments(id);
+			Member member = MemberService.getMember(id);
+			ArrayList<Post> list = PostService.getMyPosts(id);
+			ArrayList<Comment> clist = CommentService.getMyComments(id);
 			if(member==null || list==null || clist==null) { // 멤버정보 가져오기 실패
 				request.setAttribute("err_body", "알수 없는 오류로 멤버정보를 가져오는데 실패하였습니다.");
 				request.setAttribute("forward_url", "index.jsp");
@@ -147,7 +147,7 @@ public class MemberController implements Controller {
 		}
 	}
 	private void read_many(HttpServletRequest request,HttpServletResponse response) throws IOException {
-		ArrayList<MemberVO> list = null;
+		ArrayList<Member> list = null;
 		HttpSession session = request.getSession();
 		Integer per = (Integer)session.getAttribute("permission"); // 사용자의 권한
 		if(per==null||per<1) { // 로그인X
@@ -212,7 +212,7 @@ public class MemberController implements Controller {
 		}catch(NumberFormatException e) {
 			school_year=0;
 		}
-		MemberVO member = new MemberVO(id,pw,name,birthY,admissionY,joinY,phone,email,scholastic,school_year,interest,address,address_now,0,etc,0);
+		Member member = new Member(id,pw,name,birthY,admissionY,joinY,phone,email,scholastic,school_year,interest,address,address_now,0,etc,0);
 		member.setMypost_comment_noti_allow(mypost_comment_noti_allow);
 		member.setMycomment_comment_noti_allow(mycomment_comment_noti_allow);
 		member.setCall_noti_allow(call_noti_allow);
@@ -244,7 +244,7 @@ public class MemberController implements Controller {
 		int old_per = MemberService.getMember(id).getPermission(); // 변경대상 회원의 현재 멤버등급.
 		int per = Integer.parseInt(request.getParameter("edit_per")); //변경하려는 멤버등급
 		int permission = (int)session.getAttribute("permission"); // 로그인된 사용자의 권한
-		MemberVO member = new MemberVO();
+		Member member = new Member();
 		member.setId(id);
 		String csrf_token_server = (String)session.getAttribute("csrf_token");
 		String csrf_token_client = request.getParameter("csrf_token");
@@ -306,7 +306,7 @@ public class MemberController implements Controller {
 			throws ServletException, IOException{
 		String id = request.getParameter("id");
 		String pw = request.getParameter("pw");
-		MemberVO member = new MemberVO();
+		Member member = new Member();
 		member.setId(id);
 		member.setPw(pw);
 		HttpSession session = request.getSession();
@@ -331,7 +331,7 @@ public class MemberController implements Controller {
 			throws ServletException, IOException{
 		String id = request.getParameter("id");
 		String pw = request.getParameter("pw");
-		MemberVO member = new MemberVO();
+		Member member = new Member();
 		member.setId(id);
 		member.setPw(pw);
 		HttpSession session = request.getSession();
@@ -369,7 +369,7 @@ public class MemberController implements Controller {
 		String id = (String)session.getAttribute("id");
 		int permission = (int)session.getAttribute("permission");
 		String uid = request.getParameter("id");
-		MemberVO member = MemberService.getMember(uid);
+		Member member = MemberService.getMember(uid);
 		int per = member.getPermission();
 		String csrf_token_server = (String)session.getAttribute("csrf_token");
 		String csrf_token_client = request.getParameter("csrf_token");

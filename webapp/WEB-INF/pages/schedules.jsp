@@ -8,7 +8,7 @@
 if(!is_login || per==0){
 	response.sendRedirect("index.jsp");
 }
-ArrayList<ScheduleVO> list = (ArrayList<ScheduleVO>)request.getAttribute("schedules");
+ArrayList<Schedule> list = (ArrayList<Schedule>)request.getAttribute("schedules");
 
 Calendar cal = Calendar.getInstance(); // 서버시간
 	if(list!=null)

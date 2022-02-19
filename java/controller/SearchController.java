@@ -41,7 +41,7 @@ public class SearchController implements Controller {
 				request.setAttribute("err_body", "사용할 수 없는 검색영역입니다.");
 				HttpUtil.forward(request, response, "/WEB-INF/pages/fail.jsp");
 			}else {
-				ArrayList<PostVO> search_result = SearchService.searchPost(search_word, search_target, permission, sort);
+				ArrayList<Post> search_result = SearchService.searchPost(search_word, search_target, permission, sort);
 				request.setAttribute("search_result", search_result);
 				HttpUtil.forward(request, response, "/WEB-INF/pages/search_result.jsp");
 			}
@@ -65,7 +65,7 @@ public class SearchController implements Controller {
 				request.setAttribute("err_body", "사용할 수 없는 검색영역입니다.");
 				HttpUtil.forward(request, response, "/WEB-INF/pages/fail.jsp");
 			}else {
-				ArrayList<PostVO> search_result = SearchService.search_from_board(board_name, search_word, search_target, permission, sort);
+				ArrayList<Post> search_result = SearchService.search_from_board(board_name, search_word, search_target, permission, sort);
 				request.setAttribute("search_result", search_result);
 				HttpUtil.forward(request, response, "/WEB-INF/pages/search_result.jsp");
 			}

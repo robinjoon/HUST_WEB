@@ -3,8 +3,8 @@
 <%@ include file="../semipage/header.jsp" %>
 <%@ include file="../semipage/nav.jsp" %>
 <%
-	PostVO post = (PostVO)request.getAttribute("post");
-	ArrayList<ArrayList<CommentVO>>comments = (ArrayList<ArrayList<CommentVO>>)request.getAttribute("comments");
+	Post post = (Post)request.getAttribute("post");
+	ArrayList<ArrayList<vo.Comment>>comments = (ArrayList<ArrayList<vo.Comment>>)request.getAttribute("comments");
 	if(!is_login){
 		response.sendRedirect("index.jsp");
 	}
@@ -88,8 +88,8 @@
 	<div class="list-group">
 		<%if(comments!=null){
 			for(int i=0;i<comments.size();i++){
-			ArrayList<CommentVO> commentlist = comments.get(i);
-			CommentVO comment = commentlist.get(0);
+			ArrayList<vo.Comment> commentlist = comments.get(i);
+			vo.Comment comment = commentlist.get(0);
 		%>
 		<c:set var="c_content" value="<%=comment.getContent() %>"/>
 		<c:set var="c_writer" value="<%=comment.getWriter() %>"/>

@@ -3,11 +3,11 @@
 <%@ include file="../semipage/header.jsp" %>
 <%@ include file="../semipage/nav.jsp" %>
 <%
-	ArrayList<ProblemVO> problist = (ArrayList<ProblemVO>)request.getAttribute("problems");
+	ArrayList<Problem> problist = (ArrayList<Problem>)request.getAttribute("problems");
 	ArrayList<Integer> solved_list = (ArrayList<Integer>)request.getAttribute("solved_list");
-	ArrayList<MemberVO> rank = (ArrayList<MemberVO>)request.getAttribute("rank");
+	ArrayList<Member> rank = (ArrayList<Member>)request.getAttribute("rank");
 	ArrayList<String> category = (ArrayList<String>)request.getAttribute("category_list");
-	HashMap<String,ArrayList<ProblemVO>> probmap = (HashMap<String,ArrayList<ProblemVO>>)request.getAttribute("probmap");
+	HashMap<String,ArrayList<Problem>> probmap = (HashMap<String,ArrayList<Problem>>)request.getAttribute("probmap");
 	Collections.sort(solved_list);
 	category.add("문제추가");
 	category.add("랭킹");
@@ -64,7 +64,7 @@
 	<%	}%>
 	</table>
 	<%}else if(!category.get(i).contentEquals("문제추가")&&!category.get(i).contentEquals("랭킹")){%>
-		<%ArrayList<ProblemVO> probs = probmap.get(category.get(i)); %>
+		<%ArrayList<Problem> probs = probmap.get(category.get(i)); %>
 		<table class="table table-responsive table-bordered">
 		<%for(int j=0;j<probs.size();j++){%>
 		<%if(j%(probs.size()>=4?4:probs.size())==0){ %>

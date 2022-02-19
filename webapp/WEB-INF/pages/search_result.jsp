@@ -3,11 +3,10 @@
 <%@ include file="../semipage/header.jsp" %>
 <%@ include file="../semipage/nav.jsp" %>
 <%
-	ArrayList<PostVO> search_result = (ArrayList<PostVO>)request.getAttribute("search_result");
+ArrayList<Post> search_result = (ArrayList<Post>)request.getAttribute("search_result");
 	if(!is_login){
 		response.sendRedirect("index.jsp");
 	}
-	
 %>
 
 <div class= "inmain d-none">
@@ -26,7 +25,8 @@
 	</thead>
 	<%
 	for(int i=0;i<search_result.size();i++){ 
-		PostVO post = search_result.get(i);%>
+			Post post = search_result.get(i);
+	%>
 		<c:set var="board_name" value="<%=post.getBoard_name()%>"/>
 		<tr id="row<%=i%>">
 			<c:set var="title" value="<%=post.getTitle() %>"/>

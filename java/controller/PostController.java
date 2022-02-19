@@ -15,10 +15,10 @@ import javax.servlet.http.HttpSession;
 import com.oreilly.servlet.MultipartRequest;
 import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
-import vo.CommentVO;
-import vo.MemberVO;
-import vo.NotiVO;
-import vo.PostVO;
+import vo.Comment;
+import vo.Member;
+import vo.Noti;
+import vo.Post;
 import vo.Viewlog;
 import service.BoardService;
 import service.CommentService;
@@ -100,7 +100,7 @@ public class PostController implements Controller {
 		boolean is_notice = Boolean.parseBoolean(multi.getParameter("is_notice"));
 		int manage = BoardService.getPermissions_by_name(board_name).get("manage");
 		
-		PostVO post = new PostVO();
+		Post post = new Post();
 		post.setWriter(id);
 		post.setBoard_name(board_name);
 		post.setTitle(title);
@@ -113,7 +113,7 @@ public class PostController implements Controller {
 		if(is_notice && (manage==7 && permission<4)) {
 			is_notice=false;
 		}
-		post.setIs_notice(is_notice);
+		post.set_notice(is_notice);
 		String csrf_token_server = (String)session.getAttribute("csrf_token");
 		String csrf_token_client = multi.getParameter("csrf_token");
 		if (id != null && csrf_token_server!=null && csrf_token_client!=null) { // 로그인여부 확인
@@ -123,11 +123,11 @@ public class PostController implements Controller {
 						int pid = PostService.writepost_v2(post);
 						if (pid!=-1) {//작성성공
 							if(is_notice&&(permission==manage||permission==6 || (manage==7&&permission>=4))) { // 공지게시글일 시 관리자가 글 쓰는 건지 확인 후 알림보냄.
-								ArrayList<MemberVO> memberlist = MemberService.getMemberList(7, "전체");
+								ArrayList<Member> memberlist = MemberService.getMemberList(7, "전체");
 								for(int i =0;i<memberlist.size();i++) {
-									MemberVO member = memberlist.get(i);
+									Member member = memberlist.get(i);
 									if(!member.getScholastic().contentEquals("탈퇴") && member.getPermission()>0 && BoardService.getPermissions_by_name(board_name).get("read")>=member.getPermission()) { // 탈퇴회원이나 게스트가 아닌사람에게만 알림 보냄.
-										NotiVO noti = new NotiVO();
+										Noti noti = new Noti();
 										noti.setSender(id);
 										noti.setReceiver(member.getId());
 										noti.setTitle(board_name+"에 새 공지가 등록되었습니다.");
@@ -177,7 +177,7 @@ public class PostController implements Controller {
 		int comment_per = BoardService.getPermissions_by_Pid(pid).get("comment");
 		if(permission==null||read_per>permission) // 읽기권한 확인
 			response.sendRedirect("index.jsp");
-		PostVO post = PostService.getPost(pid);
+		Post post = PostService.getPost(pid);
 		if(post.isBlind()) { // 게시글이 삭제된 경우
 			if(!(permission==manage||permission==6 || (manage==7&&permission>=4))) { // 게시글이 삭제되었고 관리자가 아닌경우
 				request.setAttribute("err_body", "삭제된 게시글입니다.");
@@ -190,12 +190,12 @@ public class PostController implements Controller {
 				content = Secure.check_script(content);
 				post.setContent(content);
 				request.setAttribute("post", post);
-				ArrayList<ArrayList<CommentVO>> comments = CommentService.getCommentList_v2(pid);
+				ArrayList<ArrayList<Comment>> comments = CommentService.getCommentList_v2(pid);
 				if(comments!=null) {
 					for(int i =0;i<comments.size();i++) {
-						ArrayList<CommentVO> child_comments = comments.get(i);
+						ArrayList<Comment> child_comments = comments.get(i);
 						for(int j=0;j<child_comments.size();j++) {
-							CommentVO comment = child_comments.get(j);
+							Comment comment = child_comments.get(j);
 							if(comment.isBlind()) {
 								if(permission==manage||permission==6 || (manage==7&&permission>=4)) {
 									comment.setContent("삭제된 댓글입니다. 내용은 다음과 같습니다.\n"+comment.getContent());
@@ -215,12 +215,12 @@ public class PostController implements Controller {
 			post.setTitle(title);
 			post.setContent(content);
 			request.setAttribute("post", post);
-			ArrayList<ArrayList<CommentVO>> comments = CommentService.getCommentList_v2(pid);
+			ArrayList<ArrayList<Comment>> comments = CommentService.getCommentList_v2(pid);
 			if(comments!=null) {
 				for(int i =0;i<comments.size();i++) {
-					ArrayList<CommentVO> child_comments = comments.get(i);
+					ArrayList<Comment> child_comments = comments.get(i);
 					for(int j=0;j<child_comments.size();j++) {
-						CommentVO comment = child_comments.get(j);
+						Comment comment = child_comments.get(j);
 						if(comment.isBlind()) {
 							if(permission==manage||permission==6 || (manage==7&&permission>=4)) {
 								comment.setContent("삭제된 댓글입니다. 내용은 다음과 같습니다.\n"+comment.getContent());
@@ -252,7 +252,7 @@ public class PostController implements Controller {
 			response.sendRedirect("index.jsp");
 		}
 		Integer page = Integer.parseInt(request.getParameter("page"));
-		ArrayList<PostVO> postlist = PostService.getPostlist(bname,page);
+		ArrayList<Post> postlist = PostService.getPostlist(bname,page);
 		int now = page;
 		int total = postlist.size()/10;
 		if(postlist.size()%10!=0)
@@ -376,12 +376,12 @@ public class PostController implements Controller {
 		String title = request.getParameter("title");
 		String content = request.getParameter("content");
 		boolean is_notice = Boolean.parseBoolean(request.getParameter("is_notice"));
-		PostVO post = new PostVO();
+		Post post = new Post();
 		post.setPid(pid);post.setBoard_name(board_name);
 		post.setTitle(title);post.setContent(content);
 		if(is_notice && (permission!=manage && permission!=6)) // 관리자가 아닌 사람이 공지게시글로 설정한 경우 공지가 아니게 변경.
 			is_notice=false;
-		post.setIs_notice(is_notice);
+		post.set_notice(is_notice);
 		String id = (String)session.getAttribute("id");
 		String csrf_token_server = (String)session.getAttribute("csrf_token");
 		String csrf_token_client = request.getParameter("csrf_token");
@@ -420,7 +420,7 @@ public class PostController implements Controller {
 		String board_name = request.getParameter("board_name");
 		Integer permission = (int)session.getAttribute("permission"); // 사실상 변조 불가
 		int manage_per = BoardService.getPermissions_by_Pid(pid).get("manage");// 게시글이 속한 게시판의 관리권한
-		PostVO post = new PostVO();
+		Post post = new Post();
 		post.setPid(pid);
 		post.setBoard_name(board_name);
 		post.setWriter(writer);
@@ -454,7 +454,7 @@ public class PostController implements Controller {
 	private void download(HttpServletRequest request,HttpServletResponse response) throws IOException {
 		String savePath = request.getServletContext().getRealPath("data"); // 실제 파일저장경로
 		int pid = Integer.parseInt(request.getParameter("pid"));
-		PostVO post = PostService.getPost(pid);
+		Post post = PostService.getPost(pid);
 		File folder = new File(savePath);
 		String up = folder.getParent();
 		folder = new File(up);

@@ -3,14 +3,14 @@
 <%@ include file="../semipage/header.jsp" %>
 <%@ include file="../semipage/nav.jsp" %>
     <%
-    	ArrayList<MemberVO> list = (ArrayList<MemberVO>)request.getAttribute("memberlist");
+    ArrayList<Member> list = (ArrayList<Member>)request.getAttribute("memberlist");
     %>
     <%
-	if(!is_login){
-		response.sendRedirect("index.jsp");
-	}
-    String csrf_token = (String)session.getAttribute("csrf_token");
-	%>
+    if(!is_login){
+    		response.sendRedirect("index.jsp");
+    	}
+        String csrf_token = (String)session.getAttribute("csrf_token");
+    %>
 <div class="inmain d-none">
 
 <form class="form-inline" action="memberlist.do" method="get">
@@ -49,16 +49,20 @@
 			<th scope="col" class="interest">관심분야</th>
 			<th scope="col">회원등급</th>
 			<th scope="col">더보기</th>
-			<%if(permission>=4){ %>
+			<%
+			if(permission>=4){
+			%>
 			<th scope="col">회원등급변경하기</th>
-			<%} %>
+			<%
+			}
+			%>
 			</tr>
 		</thead>
 		<tbody>
 			<%
-				for(int i=0;i<list.size();i++){
-					MemberVO member = list.get(i);
-				%>
+			for(int i=0;i<list.size();i++){
+						Member member = list.get(i);
+			%>
 				<c:set var="member_id" value="<%=member.getId() %>"/>
 			  	<c:set var="member_name" value="<%=member.getName() %>"/>
 			  	<c:set var="member_phone" value="<%=member.getPhone() %>"/>

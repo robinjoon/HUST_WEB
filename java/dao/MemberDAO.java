@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import tools.Secure;
 import db.DB;
-import vo.MemberVO;
+import vo.Member;
 
 public class MemberDAO {
 	private static MemberDAO dao;
@@ -21,7 +21,7 @@ public class MemberDAO {
 		return dao;
 	}
 	
-	public boolean join_member(MemberVO member) { //보안 처리 필요
+	public boolean join_member(Member member) { //보안 처리 필요
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -45,9 +45,9 @@ public class MemberDAO {
 			pstmt.setString(13, member.getAddress_now());
 			pstmt.setString(14, member.getEtc());
 			pstmt.setString(15, "");
-			pstmt.setBoolean(16, member.getMypost_comment_noti_allow());
-			pstmt.setBoolean(17, member.getMycomment_comment_noti_allow());
-			pstmt.setBoolean(18, member.getCall_noti_allow());
+			pstmt.setBoolean(16, member.isMypost_comment_noti_allow());
+			pstmt.setBoolean(17, member.isMycomment_comment_noti_allow());
+			pstmt.setBoolean(18, member.isCall_noti_allow());
 			
 			pstmt.executeUpdate();
 			return true;
@@ -56,7 +56,7 @@ public class MemberDAO {
 			return false;
 		}
 	}
-	public boolean update_member(MemberVO member) { // 비밀번호 변경없이 타 정보 수정만 할 때 처리 필요
+	public boolean update_member(Member member) { // 비밀번호 변경없이 타 정보 수정만 할 때 처리 필요
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -81,9 +81,9 @@ public class MemberDAO {
 				pstmt.setString(10, member.getAddress());
 				pstmt.setString(11, member.getAddress_now());
 				pstmt.setString(12, member.getEtc());
-				pstmt.setBoolean(13, member.getMypost_comment_noti_allow());
-				pstmt.setBoolean(14, member.getMycomment_comment_noti_allow());
-				pstmt.setBoolean(15, member.getCall_noti_allow());
+				pstmt.setBoolean(13, member.isMypost_comment_noti_allow());
+				pstmt.setBoolean(14, member.isMycomment_comment_noti_allow());
+				pstmt.setBoolean(15, member.isCall_noti_allow());
 				pstmt.setString(16, member.getId());
 				
 			}else {
@@ -100,9 +100,9 @@ public class MemberDAO {
 				pstmt.setString(11, member.getAddress());
 				pstmt.setString(12, member.getAddress_now());
 				pstmt.setString(13, member.getEtc());
-				pstmt.setBoolean(14, member.getMypost_comment_noti_allow());
-				pstmt.setBoolean(15, member.getMycomment_comment_noti_allow());
-				pstmt.setBoolean(16, member.getCall_noti_allow());
+				pstmt.setBoolean(14, member.isMypost_comment_noti_allow());
+				pstmt.setBoolean(15, member.isMycomment_comment_noti_allow());
+				pstmt.setBoolean(16, member.isCall_noti_allow());
 				pstmt.setString(17, member.getId());
 			}
 			pstmt.executeUpdate();
@@ -113,7 +113,7 @@ public class MemberDAO {
 		}
 	}
 	
-	public boolean delete_member(MemberVO member) {
+	public boolean delete_member(Member member) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -131,10 +131,10 @@ public class MemberDAO {
 		}
 	}
 	
-	public MemberVO getMember(String id) { //멤버 한명 가져오기.
+	public Member getMember(String id) { //멤버 한명 가져오기.
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
-		MemberVO member = new MemberVO();
+		Member member = new Member();
 		try {
 			String sql = "select * from member where id = ?";
 			
@@ -170,8 +170,8 @@ public class MemberDAO {
 		}
 	}
 	
-	public ArrayList<MemberVO> getMemberList(String group){ //특정그룹(YB,OB) 멤버 전치 가져오기
-		ArrayList<MemberVO> memberlist = new ArrayList<MemberVO>();
+	public ArrayList<Member> getMemberList(String group){ //특정그룹(YB,OB) 멤버 전치 가져오기
+		ArrayList<Member> memberlist = new ArrayList<Member>();
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		
@@ -187,7 +187,7 @@ public class MemberDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				MemberVO member = new MemberVO();
+				Member member = new Member();
 				member.setId(rs.getString("id"));
 				member.setName(rs.getString("name"));
 				member.setBirthY(rs.getInt("birthY"));
@@ -215,8 +215,8 @@ public class MemberDAO {
 			return null;
 		}
 	}
-	public ArrayList<MemberVO> getMemberList(int permission){ //특정그룹(YB,OB) 멤버 전치 가져오기
-		ArrayList<MemberVO> memberlist = new ArrayList<MemberVO>();
+	public ArrayList<Member> getMemberList(int permission){ //특정그룹(YB,OB) 멤버 전치 가져오기
+		ArrayList<Member> memberlist = new ArrayList<Member>();
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -231,7 +231,7 @@ public class MemberDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				MemberVO member = new MemberVO();
+				Member member = new Member();
 				member.setId(rs.getString("id"));
 				member.setName(rs.getString("name"));
 				member.setBirthY(rs.getInt("birthY"));
@@ -259,8 +259,8 @@ public class MemberDAO {
 			return null;
 		}
 	}
-	public ArrayList<MemberVO> getMemberList(int permission,String group){ //특정그룹(YB,OB) 멤버 전체 가져오기
-		ArrayList<MemberVO> memberlist = new ArrayList<MemberVO>();
+	public ArrayList<Member> getMemberList(int permission,String group){ //특정그룹(YB,OB) 멤버 전체 가져오기
+		ArrayList<Member> memberlist = new ArrayList<Member>();
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -279,7 +279,7 @@ public class MemberDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				MemberVO member = new MemberVO();
+				Member member = new Member();
 				member.setId(rs.getString("id"));
 				member.setName(rs.getString("name"));
 				member.setBirthY(rs.getInt("birthY"));
@@ -308,8 +308,8 @@ public class MemberDAO {
 		}
 	}
 	
-	public ArrayList<MemberVO> getMemberList(int permission, String input, String notuse){ //태그가능한 멤버들중 사용자의 입력이 포함된 회원목록 가져오기
-		ArrayList<MemberVO> memberlist = new ArrayList<MemberVO>();
+	public ArrayList<Member> getMemberList(int permission, String input, String notuse){ //태그가능한 멤버들중 사용자의 입력이 포함된 회원목록 가져오기
+		ArrayList<Member> memberlist = new ArrayList<Member>();
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		input = "%"+input+"%";
@@ -322,7 +322,7 @@ public class MemberDAO {
 			pstmt.setString(3,input);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				MemberVO member = new MemberVO();
+				Member member = new Member();
 				member.setId(rs.getString("id"));
 				member.setName(rs.getString("name"));
 				member.setBirthY(rs.getInt("birthY"));
@@ -350,7 +350,7 @@ public class MemberDAO {
 			return null;
 		}
 	}	
-	public int login_member(MemberVO member) { //return == -1 ==> 로그인 실패. else 사용자 권한 반환 
+	public int login_member(Member member) { //return == -1 ==> 로그인 실패. else 사용자 권한 반환 
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -371,7 +371,7 @@ public class MemberDAO {
 			return -1;
 		}
 	}
-	public boolean update_per(MemberVO member,int per) {
+	public boolean update_per(Member member,int per) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {

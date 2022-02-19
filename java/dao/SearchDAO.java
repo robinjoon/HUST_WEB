@@ -20,8 +20,8 @@ public class SearchDAO {
 		return dao;
 	}
 	
-	public ArrayList<PostVO> searchPost(String search_word,String search_target, int permission, String sort){
-		ArrayList<PostVO> search_result = new ArrayList<PostVO>();
+	public ArrayList<Post> searchPost(String search_word,String search_target, int permission, String sort){
+		ArrayList<Post> search_result = new ArrayList<Post>();
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		search_word = "%"+search_word+"%";
@@ -37,14 +37,14 @@ public class SearchDAO {
 				if(rs.getInt("read_permission")>permission || rs.getBoolean("blind")) {
 					continue;
 				}else {
-					PostVO post = new PostVO();
+					Post post = new Post();
 					post.setPid(rs.getInt("pid"));
 					post.setWriter(rs.getString("writer"));
 					post.setBoard_name(rs.getString("board_name"));
 					post.setTitle(rs.getString("title"));
 					post.setContent(rs.getString("content"));
 					post.setWrite_date(rs.getTimestamp("write_date"));
-					post.setIs_notice(rs.getBoolean("is_notice"));
+					post.set_notice(rs.getBoolean("is_notice"));
 					post.setViews(rs.getLong("views"));
 					post.setOrigin_file_name(rs.getString("origin_file_name"));
 					post.setSystem_file_name(rs.getString("system_file_name"));
@@ -58,8 +58,8 @@ public class SearchDAO {
 			return null;
 		}
 	}
-	public ArrayList<PostVO> searchPost_from_board(String board_name,String search_word,String search_target, int permission, String sort){
-		ArrayList<PostVO> search_result = new ArrayList<PostVO>();
+	public ArrayList<Post> searchPost_from_board(String board_name,String search_word,String search_target, int permission, String sort){
+		ArrayList<Post> search_result = new ArrayList<Post>();
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		search_word = "%"+search_word+"%";
@@ -76,14 +76,14 @@ public class SearchDAO {
 				if(rs.getInt("read_permission")>permission || rs.getBoolean("blind")) {
 					continue;
 				}else {
-					PostVO post = new PostVO();
+					Post post = new Post();
 					post.setPid(rs.getInt("pid"));
 					post.setWriter(rs.getString("writer"));
 					post.setBoard_name(rs.getString("board_name"));
 					post.setTitle(rs.getString("title"));
 					post.setContent(rs.getString("content"));
 					post.setWrite_date(rs.getTimestamp("write_date"));
-					post.setIs_notice(rs.getBoolean("is_notice"));
+					post.set_notice(rs.getBoolean("is_notice"));
 					post.setViews(rs.getLong("views"));
 					post.setOrigin_file_name(rs.getString("origin_file_name"));
 					post.setSystem_file_name(rs.getString("system_file_name"));

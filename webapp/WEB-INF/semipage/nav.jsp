@@ -2,7 +2,7 @@
 	pageEncoding="UTF-8" import="java.util.*,vo.*,dao.*,service.*,tools.*,listener.*"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%
-	String id = (String) session.getAttribute("id");
+String id = (String) session.getAttribute("id");
 	Integer per = (Integer) session.getAttribute("permission");
 	int permission = -1;
 	boolean is_login = false;
@@ -11,21 +11,21 @@
 		is_login = true;
 		permission = per.intValue();
 		if (per >= 4) {
-			is_admin = true;
+	is_admin = true;
 		}
 	}
-	LinkedList<BoardVO> boardlist = new LinkedList<BoardVO>();
+	LinkedList<Board> boardlist = new LinkedList<Board>();
 	BoardDAO dao = BoardDAO.getInstance();
 	if (is_login) {
 		boardlist = dao.getBoardlist(permission);
 	}
-	ArrayList<NotiVO> notis = (ArrayList<NotiVO>)NotiService.getNotiList(id);
+	ArrayList<Noti> notis = (ArrayList<Noti>)NotiService.getNotiList(id);
 	int unread_noti_count =0;
 	if(notis!=null){
 		for(int i=0;i<notis.size();i++){
-			if(!notis.get(i).isRead()){
-				unread_noti_count++;
-			}
+	if(!notis.get(i).isRead()){
+		unread_noti_count++;
+	}
 		}
 	}
 	ArrayList<HttpSession> sessions = Sessions.getSessions();

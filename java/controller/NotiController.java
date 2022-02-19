@@ -35,7 +35,7 @@ public class NotiController implements Controller {
 		String id = (String)session.getAttribute("id");
 		long nid = Long.parseLong(request.getParameter("nid"));
 		if(id!=null) {
-			NotiVO noti = NotiService.getNoti(nid);
+			Noti noti = NotiService.getNoti(nid);
 			request.setAttribute("noti", noti);
 			HttpUtil.forward(request, response, "/WEB-INF/pages/noti.jsp");
 		}else {
@@ -46,7 +46,7 @@ public class NotiController implements Controller {
 		HttpSession session = (HttpSession)request.getSession();
 		String id = (String)session.getAttribute("id");
 		if(id!=null) {
-			 ArrayList<NotiVO> notilist = NotiService.getNotiList(id);
+			 ArrayList<Noti> notilist = NotiService.getNotiList(id);
 			 request.setAttribute("notilist", notilist);
 			 HttpUtil.forward(request, response, "/WEB-INF/pages/notilist.jsp");
 		 }else {
@@ -57,7 +57,7 @@ public class NotiController implements Controller {
 		HttpSession session = (HttpSession)request.getSession();
 		String id = (String)session.getAttribute("id");
 		long nid = Long.parseLong(request.getParameter("nid"));
-		NotiVO noti = NotiService.getNoti(nid);
+		Noti noti = NotiService.getNoti(nid);
 		if(id!=null && id.contentEquals(noti.getReceiver())) {
 			if(NotiService.read_noti(noti)) {
 				response.sendRedirect("notilist.do");
@@ -74,7 +74,7 @@ public class NotiController implements Controller {
 		HttpSession session = (HttpSession)request.getSession();
 		String id = (String)session.getAttribute("id");
 		Long nid = Long.parseLong(request.getParameter("nid"));
-		NotiVO noti = NotiService.getNoti(nid);
+		Noti noti = NotiService.getNoti(nid);
 		if(id!=null && id.contentEquals(noti.getReceiver())) {
 			if(NotiService.delete_noti(noti)) {
 				request.setAttribute("ok_body", "알림삭제 성공");

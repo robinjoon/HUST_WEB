@@ -5,17 +5,23 @@
 	    <%@ include file="WEB-INF/semipage/nav.jsp" %>
 
 	<%
-		ArrayList<PostVO> notice = PostDAO.getinstance().getNoticeBoard();
-		ArrayList<PostVO> free = PostDAO.getinstance().getFreeBoard();
+	ArrayList<Post> notice = PostDAO.getinstance().getNoticeBoard();
+			ArrayList<Post> free = PostDAO.getinstance().getFreeBoard();
 	%>
 	<div class="inmain d-none">
 	<br>
-	<%if(!is_login || permission==0){ %>
-		<%if(permission==0){ %>
+	<%
+	if(!is_login || permission==0){
+	%>
+		<%
+		if(permission==0){
+		%>
 		<h3>
 			<font color="#ff0000">회원가입은 완료되었으나 운영자의 승인이 필요합니다. 운영자에게 아이디를 알려주세요.</font>
 		</h3>
-		<%} %>
+		<%
+		}
+		%>
 		<h4>
 			<b>H.U.S.T의 의미는?</b>
 		</h4>
@@ -204,7 +210,9 @@
 			<p>22대 : runa(홍영우)</p>
 			<p>23대 : kill(길경서)</p>
 		</blockquote>
-		<%}else{ %>
+		<%
+		}else{
+		%>
 		<div class="container-fluid">
 			<table class="table table-striped table-responsive-sm intable">
 				<caption>공지게시판 최신글</caption>
@@ -215,26 +223,36 @@
 						<th>작성자</th>
 						<th>작성일</th>
 					</tr>
-					<%for(int i=0;i<notice.size();i++){
-						PostVO post = notice.get(i);%>
-								<c:set var="title" value="<%=post.getTitle() %>"/>
-								<c:set var="writer" value="<%=post.getWriter() %>"/>
-					<%if(post.isIs_notice()){ %>
+					<%
+					for(int i=0;i<notice.size();i++){
+									Post post = notice.get(i);
+					%>
+								<c:set var="title" value="<%=post.getTitle()%>"/>
+								<c:set var="writer" value="<%=post.getWriter()%>"/>
+					<%
+					if(post.isIs_notice()){
+					%>
 						<tr class="bg-primary notice">
-							<td><%=post.getPid() %></td>
+							<td><%=post.getPid()%></td>
 							<td><a class="notice" href="postview.do?pid=<%=post.getPid()%>&board_name=공지게시판" class="intable"><c:out value="${title}"/></a></td>
 							<td><a class="notice" href="getmember.do?member=<c:out value="${writer}"/>"><c:out value="${writer}"/></a></td>
-							<td><%=post.getWrite_date().toString().substring(0, 10) %></td>
+							<td><%=post.getWrite_date().toString().substring(0, 10)%></td>
 						</tr>
-					<% }else{%>
+					<%
+					}else{
+					%>
 						<tr>
-							<td><%=post.getPid() %></td>
+							<td><%=post.getPid()%></td>
 							<td><a href="postview.do?pid=<%=post.getPid()%>&board_name=공지게시판" class="intable"><c:out value="${title}"/></a></td>
 							<td><a href="getmember.do?member=<c:out value="${writer}"/>"><c:out value="${writer}"/></a></td>
-							<td><%=post.getWrite_date().toString().substring(0, 10) %></td>
+							<td><%=post.getWrite_date().toString().substring(0, 10)%></td>
 						</tr>
-					 <%} %>
-					<%} %>
+					 <%
+					 }
+					 %>
+					<%
+					}
+					%>
 				</thead>
 			</table>
 			<table class="table table-striped table-responsive-sm intable">
@@ -246,8 +264,10 @@
 						<th>작성자</th>
 						<th>작성일</th>
 					</tr>
-					<%for(int i=0;i<free.size();i++){
-						PostVO post = free.get(i);%>
+					<%
+					for(int i=0;i<free.size();i++){
+									Post post = free.get(i);
+					%>
 						<c:set var="title" value="<%=post.getTitle() %>"/>
 						<c:set var="writer" value="<%=post.getWriter() %>"/>
 					<%if(post.isIs_notice()){ %>
@@ -272,11 +292,11 @@
 			<!-- 간단일정 -->
 			<div class="row">
 			<%
-				LocalDate currentDate = LocalDate.now();
-				java.sql.Date date = java.sql.Date.valueOf(currentDate);
-				ScheduleVO sc = ScheduleDAO.getInstance().getSchedule(date);
-				ScheduleVO next = ScheduleDAO.getInstance().nextSchedule(date);
-				ScheduleVO pre = ScheduleDAO.getInstance().preSchedule(date);
+			LocalDate currentDate = LocalDate.now();
+					java.sql.Date date = java.sql.Date.valueOf(currentDate);
+					Schedule sc = ScheduleDAO.getInstance().getSchedule(date);
+					Schedule next = ScheduleDAO.getInstance().nextSchedule(date);
+					Schedule pre = ScheduleDAO.getInstance().preSchedule(date);
 			%>
 				<c:set var="title" value="<%=pre.getTitle() %>"/>
 				<c:set var="place" value="<%=pre.getPlace() %>"/>

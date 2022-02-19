@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import service.ScheduleService;
 import tools.HttpUtil;
-import vo.ScheduleVO;
+import vo.Schedule;
 
 public class ScheduleController implements Controller {
 
@@ -38,9 +38,9 @@ public class ScheduleController implements Controller {
 		String content = request.getParameter("content");
 		boolean is_ob = Boolean.parseBoolean(request.getParameter("is_ob"));
 		System.out.println(is_ob);
-		ScheduleVO schedule = new ScheduleVO();
+		Schedule schedule = new Schedule();
 		schedule.setContent(content);
-		schedule.setIs_ob(is_ob);
+		schedule.set_ob(is_ob);
 		schedule.setPlace(place);
 		schedule.setS_date(s_date);
 		schedule.setTitle(title);
@@ -103,7 +103,7 @@ public class ScheduleController implements Controller {
 		}
 		HttpSession session = request.getSession();
 		Integer permission = (Integer)session.getAttribute("permission");
-		ArrayList<ScheduleVO> list = null;
+		ArrayList<Schedule> list = null;
 		
 		if(what!=null && permission!=null) { // 로그인확인
 			if(what.contentEquals("all")) { // 전체 스케줄
@@ -149,7 +149,7 @@ public class ScheduleController implements Controller {
 	private void delete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
 		int sid = Integer.parseInt(request.getParameter("sid"));
-		ScheduleVO schedule = new ScheduleVO();
+		Schedule schedule = new Schedule();
 		schedule.setSid(sid);
 		HttpSession session = request.getSession();
 		Integer permission = (Integer)session.getAttribute("permission");

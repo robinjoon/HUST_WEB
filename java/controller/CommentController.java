@@ -10,9 +10,9 @@ import javax.servlet.http.HttpSession;
 
 import tools.HttpUtil;
 import tools.Tag;
-import vo.CommentVO;
-import vo.MemberVO;
-import vo.NotiVO;
+import vo.Comment;
+import vo.Member;
+import vo.Noti;
 import service.BoardService;
 import service.CommentService;
 import service.MemberService;
@@ -47,7 +47,7 @@ public class CommentController implements Controller {
 		String content = request.getParameter("content");
 		String tags = request.getParameter("tags");
 		ArrayList<String> taglist = Tag.extraction(tags,BoardService.getPermissions_by_Pid(pid).get("read")); // 작성된 태그로부터 태그된 회원리스트 생성.
-		CommentVO comment = new CommentVO();
+		Comment comment = new Comment();
 		comment.setPid(pid);
 		comment.setContent(content);
 		comment.setParent(parent);
@@ -63,11 +63,11 @@ public class CommentController implements Controller {
 				if(csrf_token_server.contentEquals(csrf_token_client)) { // csrf 토큰 체크
 					if(CommentService.write(comment)) { // 댓글 작성 성공
 						if(parent!=-1) {
-							CommentVO parent_comment = CommentService.getComment(parent);
+							Comment parent_comment = CommentService.getComment(parent);
 							String parent_writer = parent_comment.getWriter();
-							MemberVO parentwriter = MemberService.getMember(parent_writer);
-							if(parentwriter.getMycomment_comment_noti_allow()&&!id.contentEquals(parent_writer)) {
-								NotiVO noti = new NotiVO();
+							Member parentwriter = MemberService.getMember(parent_writer);
+							if(parentwriter.isMycomment_comment_noti_allow()&&!id.contentEquals(parent_writer)) {
+								Noti noti = new Noti();
 								noti.setSender(id);
 								noti.setReceiver(parent_writer);
 								noti.setTitle("내가 쓴 댓글에 새 대댓글이 등록되었습니다.");
@@ -79,9 +79,9 @@ public class CommentController implements Controller {
 							}
 						}
 						String post_writer = PostService.getPost(pid).getWriter();
-						MemberVO postwriter = MemberService.getMember(post_writer);
-						if(postwriter.getMypost_comment_noti_allow()&&!id.contentEquals(post_writer)) {
-							NotiVO noti = new NotiVO();
+						Member postwriter = MemberService.getMember(post_writer);
+						if(postwriter.isMypost_comment_noti_allow()&&!id.contentEquals(post_writer)) {
+							Noti noti = new Noti();
 							noti.setSender(id);
 							noti.setReceiver(post_writer);
 							noti.setTitle("내가 쓴 게시글에 새 댓글이 등록되었습니다.");
@@ -93,9 +93,9 @@ public class CommentController implements Controller {
 						}
 						if(!taglist.isEmpty()) {
 							for(int i=0;i<taglist.size();i++) {
-								MemberVO member = MemberService.getMember(taglist.get(i));
-								if(member!=null && member.getCall_noti_allow()) {
-									NotiVO noti = new NotiVO();
+								Member member = MemberService.getMember(taglist.get(i));
+								if(member!=null && member.isCall_noti_allow()) {
+									Noti noti = new Noti();
 									noti.setSender(id);
 									noti.setReceiver(taglist.get(i));
 									noti.setTitle(id+"님이 댓글에 태그하셨습니다.");
@@ -140,7 +140,7 @@ public class CommentController implements Controller {
 			parent = -1;
 		}
 		String content = request.getParameter("content");
-		CommentVO comment = new CommentVO();
+		Comment comment = new Comment();
 		comment.setCid(cid);
 		comment.setContent(content);
 		comment.setParent(parent);
@@ -174,7 +174,7 @@ public class CommentController implements Controller {
 		int pid = Integer.parseInt(request.getParameter("pid"));
 		long cid = Long.parseLong(request.getParameter("cid"));
 		String writer = request.getParameter("writer");
-		CommentVO comment = new CommentVO();
+		Comment comment = new Comment();
 		comment.setCid(cid);
 		comment.setWriter(writer);
 		HttpSession session = request.getSession();

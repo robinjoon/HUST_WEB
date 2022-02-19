@@ -3,9 +3,9 @@
 <%@ include file="../semipage/header.jsp" %>
 <%@ include file="../semipage/nav.jsp" %>
     <%
-    	MemberVO member = (MemberVO)request.getAttribute("member");
-    	ArrayList<PostVO> list = (ArrayList<PostVO>)request.getAttribute("list");
-    	ArrayList<CommentVO> clist = (ArrayList<CommentVO>)request.getAttribute("clist");
+    	Member member = (Member)request.getAttribute("member");
+    	ArrayList<Post> list = (ArrayList<Post>)request.getAttribute("list");
+    	ArrayList<Comment> clist = (ArrayList<Comment>)request.getAttribute("clist");
     %>
     <%
 	if(!is_login){
@@ -45,7 +45,7 @@
 					<th>작성일</th>
 				</tr>
 				<%for(int i=0;i<list.size();i++){
-					PostVO post = list.get(i);%>
+					Post post = list.get(i);%>
 					<c:set var="title" value="<%=post.getTitle() %>"/>
 					<c:set var="board" value="<%=post.getBoard_name()%>"/>
 				<tr>
@@ -68,7 +68,7 @@
 					<th>작성일</th>
 				</tr>
 				<%for(int i=0;i<clist.size();i++){
-					CommentVO comment = clist.get(i);%>
+					Comment comment = clist.get(i);%>
 					<c:set var="content" value="<%=comment.getContent() %>"/>
 				<tr>
 					<td><a href="postview.do?pid=<%=comment.getPid()%>" class="intable"><%=comment.getPid()%></a></td>

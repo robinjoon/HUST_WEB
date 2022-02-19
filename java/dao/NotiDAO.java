@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 import db.DB;
-import vo.NotiVO;
+import vo.Noti;
 
 public class NotiDAO {
 	
@@ -21,7 +21,7 @@ public class NotiDAO {
 		return dao;
 	}
 	
-	public boolean send_noti(NotiVO noti) {
+	public boolean send_noti(Noti noti) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		
@@ -46,7 +46,7 @@ public class NotiDAO {
 		}
 	}
 	
-	public boolean read_noti(NotiVO noti) {
+	public boolean read_noti(Noti noti) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		
@@ -66,7 +66,7 @@ public class NotiDAO {
 		}
 	}
 	
-	public boolean delete_noti(NotiVO noti) {
+	public boolean delete_noti(Noti noti) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		
@@ -86,10 +86,10 @@ public class NotiDAO {
 		}
 	}
 	
-	public NotiVO getNoti(Long nid) {
+	public Noti getNoti(Long nid) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
-		NotiVO noti = new NotiVO();
+		Noti noti = new Noti();
 		try {
 			String sql = "select * from noti where nid = ?";
 			
@@ -115,10 +115,10 @@ public class NotiDAO {
 		}
 	}
 	
-	public ArrayList<NotiVO> getNotiList(String receiver) {
+	public ArrayList<Noti> getNotiList(String receiver) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
-		ArrayList<NotiVO> list = new ArrayList<NotiVO>();
+		ArrayList<Noti> list = new ArrayList<Noti>();
 		try {
 			String sql = "select * from noti where receiver = ?";
 			
@@ -127,7 +127,7 @@ public class NotiDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				NotiVO noti = new NotiVO();
+				Noti noti = new Noti();
 				noti.setNid(rs.getLong("nid"));
 				noti.setSender(rs.getString("sender"));
 				noti.setReceiver(rs.getString("receiver"));

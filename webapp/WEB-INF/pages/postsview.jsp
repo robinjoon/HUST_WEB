@@ -3,7 +3,7 @@
 <%@ include file="../semipage/header.jsp" %>
 <%@ include file="../semipage/nav.jsp" %>
 <%
-	ArrayList<PostVO> list = (ArrayList<PostVO>)request.getAttribute("postlist");
+ArrayList<Post> list = (ArrayList<Post>)request.getAttribute("postlist");
 	String board_name = (String)request.getAttribute("board_name");
 	int total = (int)request.getAttribute("total");
 	int now = (int)request.getAttribute("now");
@@ -16,22 +16,21 @@
 	if(!is_login){
 		response.sendRedirect("index.jsp");
 	}
-	
 %>
 <div class= "inmain d-none">
 <br>
 <div class="container-fluid">
-<c:set var="board_name" value="<%=board_name %>"/>
-<c:set var="board_description" value="<%=BoardDAO.getInstance().getBoard(board_name).getBoard_description() %>"/>
+<c:set var="board_name" value="<%=board_name%>"/>
+<c:set var="board_description" value="<%=BoardDAO.getInstance().getBoard(board_name).getBoard_description()%>"/>
 <ul class="list-group list-group-horizontal" id ="board_description">
 	<li class="list-group-item w-25"><c:out value="${board_name}"/></li>
 	<li class="list-group-item w-75" id="board_description_text"><c:out value="${board_description}"/></li>
 </ul>
 <ul class="list-group list-group-horizontal" id ="board_info">
-	<li class="list-group-item w-25">게시판 관리자 : <%=manage %></li>
-	<li class="list-group-item w-25">게시글쓰기 : <%=write %></li>
-	<li class="list-group-item w-25">게시글읽기 : <%=read %></li>
-	<li class="list-group-item w-25">댓글쓰기 : <%=comment %></li>
+	<li class="list-group-item w-25">게시판 관리자 : <%=manage%></li>
+	<li class="list-group-item w-25">게시글쓰기 : <%=write%></li>
+	<li class="list-group-item w-25">게시글읽기 : <%=read%></li>
+	<li class="list-group-item w-25">댓글쓰기 : <%=comment%></li>
 </ul>
 <form class="form-inline my-2 my-lg-0" action="search_from_board.do" method="get">
 	<input class="form-control mr-sm-2" type="search" placeholder="게시판 내 검색" aria-label="Search" name="search_word" required>
@@ -60,20 +59,26 @@
 	</thead>
 	<%
 	for(int i=0;i<list.size();i++){ // 공지 상단 우선 출력
-		PostVO post = list.get(i);%>
-		<%if(post.isIs_notice()){%><tr class="bg-primary notice">
-			<c:set var="title" value="<%=post.getTitle() %>"/>
-			<c:set var="writer" value="<%=post.getWriter() %>"/>
-			<td><%=post.getPid() %></td>
+			Post post = list.get(i);
+	%>
+		<%
+		if(post.isIs_notice()){
+		%><tr class="bg-primary notice">
+			<c:set var="title" value="<%=post.getTitle()%>"/>
+			<c:set var="writer" value="<%=post.getWriter()%>"/>
+			<td><%=post.getPid()%></td>
 			<td><a class="notice" href="postview.do?pid=<%=post.getPid()%>&board_name=<c:out value="${board_name}"/>"><c:out value="${title}"/></a></td>
 			<td><a class="notice" href="getmember.do?member=<c:out value="${writer}"/>"><c:out value="${writer}"/></a></td>
-			<td><%=post.getWrite_date().toString().substring(0, 10) %></td>
-			<td><%=post.getViews() %></td>
+			<td><%=post.getWrite_date().toString().substring(0, 10)%></td>
+			<td><%=post.getViews()%></td>
 		</tr>
-	<% }}%>
+	<%
+	}}
+	%>
 	<%
 	for(int i=(now-1)*10 ;i<=(now*10-1 < list.size()-1 ? now*10-1 : list.size()-1);i++){ // 일반 게시글 출력
-		PostVO post = list.get(i);%>
+			Post post = list.get(i);
+	%>
 		<%if(!post.isIs_notice()){%><tr>
 			<c:set var="title" value="<%=post.getTitle() %>"/>
 			<c:set var="writer" value="<%=post.getWriter() %>"/>

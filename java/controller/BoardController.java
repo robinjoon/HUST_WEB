@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import service.BoardService;
-import vo.BoardVO;
+import vo.Board;
 import tools.HttpUtil;
 public class BoardController implements Controller {
 
@@ -38,7 +38,7 @@ public class BoardController implements Controller {
 		int mp = Integer.parseInt(request.getParameter("mp"));
 		int cp = Integer.parseInt(request.getParameter("cp"));
 		String board_description = request.getParameter("board_description");
-		BoardVO board = new BoardVO();
+		Board board = new Board();
 		board.setBoard_name(board_name);board.setRead_permission(rp);
 		board.setWrite_permission(wp);board.setManage_permission(mp);
 		board.setComment_permission(cp);
@@ -111,7 +111,7 @@ public class BoardController implements Controller {
 		int mp = Integer.parseInt(request.getParameter("mp"));
 		int cp = Integer.parseInt(request.getParameter("cp"));
 		String board_description = request.getParameter("board_description");
-		BoardVO board = new BoardVO();
+		Board board = new Board();
 		board.setBoard_name(board_name);
 		board.setBoard_description(board_description);
 		String csrf_token_server = (String)session.getAttribute("csrf_token");
@@ -177,7 +177,7 @@ public class BoardController implements Controller {
 		Integer permission = (int)session.getAttribute("permission");
 		String id  = (String)session.getAttribute("id");
 		String board_name = request.getParameter("board_name");
-		BoardVO board = new BoardVO();
+		Board board = new Board();
 		board.setBoard_name(board_name);
 		String csrf_token_server = (String)session.getAttribute("csrf_token");
 		String csrf_token_client = request.getParameter("csrf_token");

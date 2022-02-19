@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import db.DB;
-import vo.BoardVO;
+import vo.Board;
 
 public class BoardDAO {
 	private static BoardDAO dao;
@@ -22,7 +22,7 @@ public class BoardDAO {
 		return dao;
 	}
 	
-	public boolean create_board(BoardVO board) { // 게시판 생성
+	public boolean create_board(Board board) { // 게시판 생성
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -44,7 +44,7 @@ public class BoardDAO {
 		}
 	}
 	
-	public boolean delete_board(BoardVO board) { // 게시판 삭제, 게시판삭제시 게시글 고려X 수정필요
+	public boolean delete_board(Board board) { // 게시판 삭제, 게시판삭제시 게시글 고려X 수정필요
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -60,7 +60,7 @@ public class BoardDAO {
 		}
 	}
 	
-	public boolean update_board(BoardVO board, int rp,int wp,int mp,int cp) { // db에는 퍼미션의 타입이 tinyint(4)로 되어있음. 문제소지있으니 통일 필요.
+	public boolean update_board(Board board, int rp,int wp,int mp,int cp) { // db에는 퍼미션의 타입이 tinyint(4)로 되어있음. 문제소지있으니 통일 필요.
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -85,7 +85,7 @@ public class BoardDAO {
 			return false;
 		}
 	}
-	public BoardVO getBoard(String board_name){
+	public Board getBoard(String board_name){
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -95,7 +95,7 @@ public class BoardDAO {
 			pstmt.setString(1,board_name);
 			
 			ResultSet rs = pstmt.executeQuery();
-			BoardVO board = new BoardVO();
+			Board board = new Board();
 			while(rs.next()) {
 				board.setBoard_name(rs.getString("board_name"));
 				board.setRead_permission(rs.getInt("read_permission"));
@@ -110,8 +110,8 @@ public class BoardDAO {
 			return null;
 		}
 	}
-	public LinkedList<BoardVO> getBoardlist(int per){
-		LinkedList<BoardVO> boardlist = new LinkedList<BoardVO>();
+	public LinkedList<Board> getBoardlist(int per){
+		LinkedList<Board> boardlist = new LinkedList<Board>();
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -122,7 +122,7 @@ public class BoardDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				BoardVO board = new BoardVO();
+				Board board = new Board();
 				board.setBoard_name(rs.getString("board_name"));
 				board.setRead_permission(rs.getInt("read_permission"));
 				board.setWrite_permission(rs.getInt("write_permission"));

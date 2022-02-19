@@ -3,34 +3,34 @@ package service;
 import java.util.ArrayList;
 
 import dao.PostDAO;
-import vo.PostVO;
+import vo.Post;
 
 public class PostService {
-	public static boolean writepost(PostVO post) {
+	public static boolean writepost(Post post) {
 		PostDAO dao = PostDAO.getinstance();
 		return dao.write_post(post);
 	}
-	public static int writepost_v2(PostVO post) {
+	public static int writepost_v2(Post post) {
 		PostDAO dao = PostDAO.getinstance();
 		return dao.write_post_v2(post);
 	}
-	public static boolean deletepost(PostVO post) {
+	public static boolean deletepost(Post post) {
 		PostDAO dao = PostDAO.getinstance();
 		return dao.delete_post(post);
 	}
-	public static boolean modify_post(PostVO post) {
+	public static boolean modify_post(Post post) {
 		PostDAO dao = PostDAO.getinstance();
 		return dao.update_post(post);
 	}
-	public static ArrayList<PostVO> getPostlist(String bname, Integer page){
+	public static ArrayList<Post> getPostlist(String bname, Integer page){
 		PostDAO dao = PostDAO.getinstance();
 		return dao.getPostlist(bname,page);
 	}
-	public static PostVO getPost(int pid) {
+	public static Post getPost(int pid) {
 		PostDAO dao = PostDAO.getinstance();
 		return dao.getPost(pid);
 	}
-	public static ArrayList<PostVO> getMyPosts(String writer){
+	public static ArrayList<Post> getMyPosts(String writer){
 		PostDAO dao = PostDAO.getinstance();
 		return dao.getMyPosts(writer);
 	}

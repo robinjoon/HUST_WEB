@@ -3,7 +3,7 @@
 <%@ include file="../semipage/header.jsp" %>
 <%@ include file="../semipage/nav.jsp" %>
 <%
-	if(!is_admin){
+if(!is_admin){
 		response.sendRedirect("index.jsp");
 	}
 String csrf_token = (String)session.getAttribute("csrf_token");
@@ -37,71 +37,101 @@ String csrf_token = (String)session.getAttribute("csrf_token");
 				<textarea class="form-control" name="board_description" id="board_description" placeholder="게시판 설명"></textarea>
 				<label for="read_permission">읽기권한</label> 
 				<select class="form-control" name="rp" id="rp">
-					<%if(per==6){ %>
+					<%
+					if(per==6){
+					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
 					<option value=3>OB회원</option>
 					<option value=4>YB운영진</option>
 					<option value=5>OB운영진</option>
 					<option value=6>관리자</option>
-					<%}else if(per==4){ %>
+					<%
+					}else if(per==4){
+					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
 					<option value=4>YB운영진</option>
-					<%}else{ %>
+					<%
+					}else{
+					%>
 					<option value=3>OB회원</option>
 					<option value=5>OB운영진</option>
-					<%} %>
+					<%
+					}
+					%>
 				</select>
 				<label for="write_permission">쓰기권한</label> 
 				<select class="form-control" name="wp" id="wp">
-					<%if(per==6){ %>
+					<%
+					if(per==6){
+					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
 					<option value=3>OB회원</option>
 					<option value=4>YB운영진</option>
 					<option value=5>OB운영진</option>
 					<option value=6>관리자</option>
-					<%}else if(per==4){ %>
+					<%
+					}else if(per==4){
+					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
 					<option value=4>YB운영진</option>
-					<%}else{ %>
+					<%
+					}else{
+					%>
 					<option value=3>OB회원</option>
 					<option value=5>OB운영진</option>
-					<%} %>
+					<%
+					}
+					%>
 				</select>
 				<label for="manage_permission">관리권한</label> 
 				<select class="form-control" name="mp" id="mp">
-					<%if(per==6){ %>
+					<%
+					if(per==6){
+					%>
 					<option value=4>YB운영진</option>
 					<option value=5>OB운영진</option>
 					<option value=6>관리자</option>
 					<option value=7>YB/OB공동관리</option>
-					<%}else{ %>
-					<option value=<%=per %>><%=per %></option>
+					<%
+					}else{
+					%>
+					<option value=<%=per%>><%=per%></option>
 					<option value=7>YB/OB공동관리</option>
-					<%} %>
+					<%
+					}
+					%>
 				</select>
 				<label for="comment_permission">댓글권한</label> 
 				<select class="form-control" name="cp" id="cp">
-					<%if(per==6){ %>
+					<%
+					if(per==6){
+					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
 					<option value=3>OB회원</option>
 					<option value=4>YB운영진</option>
 					<option value=5>OB운영진</option>
 					<option value=6>관리자</option>
-					<%}else if(per==4){ %>
+					<%
+					}else if(per==4){
+					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
 					<option value=4>YB운영진</option>
-					<%}else{ %>
+					<%
+					}else{
+					%>
 					<option value=3>OB회원</option>
 					<option value=5>OB운영진</option>
-					<%} %>
+					<%
+					}
+					%>
 				</select>
-				<input type="hidden" name="csrf_token" value="<%=csrf_token %>">
+				<input type="hidden" name="csrf_token" value="<%=csrf_token%>">
 			<button type="submit" class="btn btn-primary">게시판 생성</button>
 			</form>
 		</li>
@@ -110,13 +140,21 @@ String csrf_token = (String)session.getAttribute("csrf_token");
   <div class="tab-pane fade" id="remove" role="tabpanel" aria-labelledby="remove-tab">
   <ul class="list-group">
 		<li class="list-group-item"><h3>게시판 삭제메뉴</h3></li>
-		<%for(int i = 0; i < boardlist.size(); i++) { %>
-			<%if(boardlist.get(i).getManage_permission()==per || per==6){ %>
-			<li class="list-group-item"><%=boardlist.get(i).getBoard_name()  %>
-				<a class='btn btn-danger btn-sm' href='delete_board.do?board_name=<%=boardlist.get(i).getBoard_name()%>&csrf_token=<%=csrf_token %>' role='button' >삭제</a>
+		<%
+		for(int i = 0; i < boardlist.size(); i++) {
+		%>
+			<%
+			if(boardlist.get(i).getManage_permission()==per || per==6){
+			%>
+			<li class="list-group-item"><%=boardlist.get(i).getBoard_name()%>
+				<a class='btn btn-danger btn-sm' href='delete_board.do?board_name=<%=boardlist.get(i).getBoard_name()%>&csrf_token=<%=csrf_token%>' role='button' >삭제</a>
 			</li>
-			<%} %>
-		<%}%>
+			<%
+			}
+			%>
+		<%
+		}
+		%>
 	</ul>
   </div>
   <div class="tab-pane fade" id="edit" role="tabpanel" aria-labelledby="edit-tab">
@@ -127,9 +165,10 @@ String csrf_token = (String)session.getAttribute("csrf_token");
 			<form action="update_board.do" method="post">
 				<label for="board_name">게시판 이름</label> 
 				<select class="form-control" name="board_name" id="board_name">
-					<%LinkedList<BoardVO> blist=BoardDAO.getInstance().getBoardlist(permission);
-					for(int i=0;i<blist.size();i++){
-						BoardVO board = blist.get(i);
+					<%
+					LinkedList<Board> blist=BoardDAO.getInstance().getBoardlist(permission);
+								for(int i=0;i<blist.size();i++){
+									Board board = blist.get(i);
 					%>
 					<c:set var="bname" value="<%=board.getBoard_name() %>"/>
 					<option value=<c:out value="${bname}"/>><c:out value="${bname}"/></option>

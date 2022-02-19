@@ -14,7 +14,7 @@ import javax.websocket.server.ServerEndpoint;
 import service.BoardService;
 import service.MemberService;
 import tools.Sessions;
-import vo.MemberVO;
+import vo.Member;
 
 // WebSocket의 호스트 주소 설정
 @ServerEndpoint("/taglist")
@@ -56,9 +56,9 @@ public class TagListSocket {
 				String token = (String)sessions.get(i).getAttribute("csrf_token");
 				int permission = BoardService.getPermissions_by_name(board_name).get("read");
 				if(sid.contentEquals(id)&&csrf_token.contentEquals(token)) {
-					ArrayList<MemberVO> taglist = MemberService.getMemberList(permission, input, "");
+					ArrayList<Member> taglist = MemberService.getMemberList(permission, input, "");
 					for(int j=0;j<taglist.size();j++) {
-						MemberVO member =taglist.get(j);
+						Member member =taglist.get(j);
 						replymessage = replymessage
 								+ "<li class='list-group-item' name='tag_searched' onclick=editTag("+"\'"+member.getId()+"\'"+");>"
 								+ member.getId()+"("+member.getName()+" "+member.getJoinY()+"기)"

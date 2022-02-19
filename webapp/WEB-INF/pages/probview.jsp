@@ -3,9 +3,9 @@
 <%@ include file="../semipage/header.jsp" %>
 <%@ include file="../semipage/nav.jsp" %>
 <%
-	ProblemVO prob = (ProblemVO)request.getAttribute("problem");
+	Problem prob = (Problem)request.getAttribute("problem");
 	ArrayList<Integer> solved_list = (ArrayList<Integer>)request.getAttribute("solved_list");
-	ArrayList<MemberVO> rank = (ArrayList<MemberVO>)request.getAttribute("rank");
+	ArrayList<Member> rank = (ArrayList<Member>)request.getAttribute("rank");
 
 	Collections.sort(solved_list);
 	if(!is_login){

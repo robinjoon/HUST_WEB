@@ -6,8 +6,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 import db.DB;
-import vo.ProblemVO;
-import vo.MemberVO;
+import vo.Problem;
+import vo.Member;
 
 public class ProblemDAO {
 	private static ProblemDAO dao;
@@ -21,7 +21,7 @@ public class ProblemDAO {
 		return dao;
 	}
 	
-	public boolean write_problem(ProblemVO prob) {
+	public boolean write_problem(Problem prob) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -41,7 +41,7 @@ public class ProblemDAO {
 		}
 	}
 	
-	public boolean update_problem(ProblemVO prob) {
+	public boolean update_problem(Problem prob) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -62,7 +62,7 @@ public class ProblemDAO {
 		}
 	}
 	
-	public boolean delete_problem(ProblemVO prob) {
+	public boolean delete_problem(Problem prob) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -78,16 +78,16 @@ public class ProblemDAO {
 		}
 	}
 	
-	public ArrayList<ProblemVO> getProbList(){
+	public ArrayList<Problem> getProbList(){
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
-		ArrayList<ProblemVO> list = new ArrayList<ProblemVO>();
+		ArrayList<Problem> list = new ArrayList<Problem>();
 		try {
 			String sql = "select * from problem";
 			pstmt = conn.prepareStatement(sql);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				ProblemVO prob = new ProblemVO();
+				Problem prob = new Problem();
 				prob.setProbid(rs.getInt("probid"));
 				prob.setCategory(rs.getString("category"));
 				prob.setTitle(rs.getString("title"));
@@ -104,7 +104,7 @@ public class ProblemDAO {
 			return null;
 		}
 	}
-	public ProblemVO getProb(int probid){
+	public Problem getProb(int probid){
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -112,7 +112,7 @@ public class ProblemDAO {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, probid);
 			ResultSet rs = pstmt.executeQuery();
-			ProblemVO prob = new ProblemVO();
+			Problem prob = new Problem();
 			while(rs.next()) {
 				prob.setProbid(rs.getInt("probid"));
 				prob.setCategory(rs.getString("category"));
@@ -129,7 +129,7 @@ public class ProblemDAO {
 			return null;
 		}
 	}
-	public boolean scoring(ProblemVO prob,String user_id) {
+	public boolean scoring(Problem prob,String user_id) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -187,8 +187,8 @@ public class ProblemDAO {
 			return solvedlist;
 		}
 	}
-	public ArrayList<MemberVO> getRanking(){
-		ArrayList<MemberVO> list = new ArrayList<MemberVO>();
+	public ArrayList<Member> getRanking(){
+		ArrayList<Member> list = new ArrayList<Member>();
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -196,7 +196,7 @@ public class ProblemDAO {
 			pstmt = conn.prepareStatement(sql);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				MemberVO member = new MemberVO();
+				Member member = new Member();
 				member.setId(rs.getString("id"));
 				member.setName(rs.getString("name"));
 				member.setBirthY(rs.getInt("birthY"));

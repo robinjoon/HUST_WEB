@@ -3,7 +3,7 @@
 <%@ include file="../semipage/header.jsp" %>
 <%@ include file="../semipage/nav.jsp" %>
 <%
-	NotiVO noti = (NotiVO)request.getAttribute("noti");
+Noti noti = (Noti)request.getAttribute("noti");
 	Whitelist mywhitelist = Whitelist.relaxed();
 	mywhitelist.addProtocols("img", "src", "http", "https", "data")
 	.addTags("font","iframe","i")

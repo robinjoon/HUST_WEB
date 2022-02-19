@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import tools.HttpUtil;
-import vo.MemberVO;
-import vo.ProblemVO;
+import vo.Member;
+import vo.Problem;
 import service.ProbService;
 public class ProbController implements Controller {
 
@@ -42,7 +42,7 @@ public class ProbController implements Controller {
 		if(title.isBlank()||content.isBlank()||category.isBlank()||answer.isBlank()) {
 			response.sendRedirect("problist.do?category=all");
 		}
-		ProblemVO prob = new ProblemVO();
+		Problem prob = new Problem();
 		prob.setTitle(title);prob.setContent(content);
 		prob.setPoint(point);prob.setAnswer(answer);
 		prob.setCategory(category);
@@ -81,12 +81,12 @@ public class ProbController implements Controller {
 		HttpSession session = request.getSession();
 		String id = (String)session.getAttribute("id");
 		Integer permission =(Integer)session.getAttribute("permission");
-		ProblemVO problem = new ProblemVO();
+		Problem problem = new Problem();
 		problem.setProbid(probid);
 		if(id!=null && permission>0) {
 			problem = ProbService.getProb(probid);
 			ArrayList<Integer> solved_list = ProbService.getSolvedList(id);
-			ArrayList<MemberVO> rank = ProbService.getRanking();
+			ArrayList<Member> rank = ProbService.getRanking();
 			request.setAttribute("solved_list", solved_list);
 			request.setAttribute("problem", problem);
 			request.setAttribute("rank", rank);
@@ -105,22 +105,22 @@ public class ProbController implements Controller {
 			response.sendRedirect("index.jsp");
 			return;
 		}
-		ArrayList<ProblemVO> list = ProbService.getProbList(); // 전체 문제리스트
+		ArrayList<Problem> list = ProbService.getProbList(); // 전체 문제리스트
 		ArrayList<Integer> solved_list = ProbService.getSolvedList(id); // 로그인된 사용자가 푼 문제리스트
-		ArrayList<MemberVO> rank = ProbService.getRanking(); // 현재 문제은행 랭킹
+		ArrayList<Member> rank = ProbService.getRanking(); // 현재 문제은행 랭킹
 		ArrayList<String> category_list = new ArrayList<String>(); // 전체 카테고리 목록
 		category_list.add("ALL");
 		for(int i=0;i<list.size();i++) {
-			ProblemVO prob = list.get(i);
+			Problem prob = list.get(i);
 			if(category_list.indexOf(prob.getCategory())==-1) {
 				category_list.add(prob.getCategory());
 			}
 		}
-		HashMap<String,ArrayList<ProblemVO>> probmap = new HashMap<String,ArrayList<ProblemVO>>(); // 각 카테고리에 해당하는 문제리스트와 대응되는 해쉬맵
+		HashMap<String,ArrayList<Problem>> probmap = new HashMap<String,ArrayList<Problem>>(); // 각 카테고리에 해당하는 문제리스트와 대응되는 해쉬맵
 		for(int i=0;i<category_list.size();i++) {
-			ArrayList<ProblemVO> problist = new ArrayList<ProblemVO>();
+			ArrayList<Problem> problist = new ArrayList<Problem>();
 			for(int j=0;j<list.size();j++) {
-				ProblemVO prob = list.get(j);
+				Problem prob = list.get(j);
 				if(category_list.get(i).contentEquals(prob.getCategory())) {
 					problist.add(prob);
 				}
@@ -143,7 +143,7 @@ public class ProbController implements Controller {
 		int point = Integer.parseInt(request.getParameter("point"));
 		String answer = request.getParameter("answer");
 		int probid = Integer.parseInt(request.getParameter("probid"));
-		ProblemVO prob = new ProblemVO();
+		Problem prob = new Problem();
 		prob.setTitle(title);prob.setContent(content);
 		prob.setPoint(point);prob.setAnswer(answer);
 		prob.setProbid(probid);
@@ -173,7 +173,7 @@ public class ProbController implements Controller {
 	private void delete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
 		int probid = Integer.parseInt(request.getParameter("probid"));
-		ProblemVO prob = new ProblemVO();
+		Problem prob = new Problem();
 		prob.setProbid(probid);
 		HttpSession session = request.getSession();
 		String id = (String)session.getAttribute("id");
@@ -202,7 +202,7 @@ public class ProbController implements Controller {
 		HttpSession session = request.getSession();
 		String id = (String)session.getAttribute("id");
 		Integer permission =(Integer)session.getAttribute("permission");
-		ProblemVO problem = new ProblemVO();
+		Problem problem = new Problem();
 		problem.setAnswer(answer); problem.setProbid(probid);
 		String csrf_token_server = (String)session.getAttribute("csrf_token");
 		String csrf_token_client = request.getParameter("csrf_token");

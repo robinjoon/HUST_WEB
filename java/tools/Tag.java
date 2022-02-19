@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import service.MemberService;
-import vo.MemberVO;
+import vo.Member;
 
 public class Tag {
 	public static ArrayList<String> extraction(String content,int permission){
@@ -12,7 +12,7 @@ public class Tag {
 		StringTokenizer st = new StringTokenizer(content,",");
 		while(st.hasMoreTokens()) {
 			String id = st.nextToken();
-			MemberVO member = MemberService.getMember(id);
+			Member member = MemberService.getMember(id);
 			if(member==null) { // 없는 id를 태그시킨 경우
 				continue;
 			}

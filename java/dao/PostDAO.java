@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 import db.DB;
-import vo.PostVO;
+import vo.Post;
 
 public class PostDAO {
 	private static PostDAO dao;
@@ -20,7 +20,7 @@ public class PostDAO {
 		return dao;
 	}
 	
-	public boolean write_post(PostVO post) { 
+	public boolean write_post(Post post) { 
 		// 게시글 쓰기. 게시글 작성 성공여부를 반환함.
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
@@ -31,7 +31,7 @@ public class PostDAO {
 			pstmt.setString(1, post.getWriter());
 			pstmt.setString(2, post.getTitle());
 			pstmt.setString(3, post.getContent());
-			pstmt.setBoolean(4, post.isIs_notice());
+			pstmt.setBoolean(4, post.is_notice());
 			pstmt.setString(5, post.getOrigin_file_name());
 			pstmt.setString(6, post.getSystem_file_name());
 			pstmt.setString(7, post.getBoard_name());
@@ -45,7 +45,7 @@ public class PostDAO {
 			return false;
 		}
 	}
-	public int write_post_v2(PostVO post) { 
+	public int write_post_v2(Post post) { 
 		// 게시글 쓰기. 작성된 게시글의 게시글번호를 반환함.
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
@@ -56,7 +56,7 @@ public class PostDAO {
 			pstmt.setString(1, post.getWriter());
 			pstmt.setString(2, post.getTitle());
 			pstmt.setString(3, post.getContent());
-			pstmt.setBoolean(4, post.isIs_notice());
+			pstmt.setBoolean(4, post.is_notice());
 			pstmt.setString(5, post.getOrigin_file_name());
 			pstmt.setString(6, post.getSystem_file_name());
 			pstmt.setString(7, post.getBoard_name());
@@ -68,7 +68,7 @@ public class PostDAO {
 				pstmt2.setString(1, post.getWriter());
 				pstmt2.setString(2, post.getTitle());
 				pstmt2.setString(3, post.getContent());
-				pstmt2.setBoolean(4, post.isIs_notice());
+				pstmt2.setBoolean(4, post.is_notice());
 				pstmt2.setString(5, post.getOrigin_file_name());
 				pstmt2.setString(6, post.getSystem_file_name());
 				pstmt2.setString(7, post.getBoard_name());
@@ -96,7 +96,7 @@ public class PostDAO {
 			pstmt.setString(1, post.getWriter());
 			pstmt.setString(2, post.getTitle());
 			pstmt.setString(3, post.getContent());
-			pstmt.setBoolean(4, post.isIs_notice());
+			pstmt.setBoolean(4, post.is_notice());
 			pstmt.setString(5, post.getOrigin_file_name());
 			pstmt.setString(6, post.getSystem_file_name());
 			pstmt.setString(7, post.getBoard_name());
@@ -110,7 +110,7 @@ public class PostDAO {
 		}
 	}*/
 	
-	public boolean delete_post(PostVO post) { // 게시글 삭제. 댓글 고려 X 수정필요
+	public boolean delete_post(Post post) { // 게시글 삭제. 댓글 고려 X 수정필요
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -127,7 +127,7 @@ public class PostDAO {
 		}
 	}
 	
-	public boolean update_post(PostVO post) { // 게시글 업데이트. 보안고려X, 수정필요
+	public boolean update_post(Post post) { // 게시글 업데이트. 보안고려X, 수정필요
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -137,7 +137,7 @@ public class PostDAO {
 			pstmt.setString(1, post.getTitle());
 			pstmt.setString(2, post.getContent());
 			pstmt.setString(3, post.getBoard_name());
-			pstmt.setBoolean(4, post.isIs_notice());
+			pstmt.setBoolean(4, post.is_notice());
 			//pstmt.setTimestamp(4, post.getWrite_date());
 			pstmt.setInt(5, post.getPid());
 			pstmt.setString(6, post.getWriter());
@@ -149,10 +149,10 @@ public class PostDAO {
 		}
 	}
 
-	public PostVO getPost(int pid) { // 게시글 하나 불러오기. 
+	public Post getPost(int pid) { // 게시글 하나 불러오기. 
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
-		PostVO post = new PostVO();
+		Post post = new Post();
 		try {
 			String sql = "select * from posts where pid = ?";
 			
@@ -167,7 +167,7 @@ public class PostDAO {
 				post.setTitle(rs.getString("title"));
 				post.setContent(rs.getString("content"));
 				post.setWrite_date(rs.getTimestamp("write_date"));
-				post.setIs_notice(rs.getBoolean("is_notice"));
+				post.set_notice(rs.getBoolean("is_notice"));
 				post.setViews(rs.getLong("views"));
 				post.setOrigin_file_name(rs.getString("origin_file_name"));
 				post.setSystem_file_name(rs.getString("system_file_name"));
@@ -180,8 +180,8 @@ public class PostDAO {
 		}
 	}
 
-	public ArrayList<PostVO> getPostlist(String bname, Integer page) {
-		ArrayList<PostVO> postlist = new ArrayList<PostVO>();
+	public ArrayList<Post> getPostlist(String bname, Integer page) {
+		ArrayList<Post> postlist = new ArrayList<Post>();
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -191,14 +191,14 @@ public class PostDAO {
 			pstmt.setString(1, bname);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				PostVO post = new PostVO();
+				Post post = new Post();
 				post.setPid(rs.getInt("pid"));
 				post.setWriter(rs.getString("writer"));
 				post.setBoard_name(bname);
 				post.setTitle(rs.getString("title"));
 				post.setContent(rs.getString("content"));
 				post.setWrite_date(rs.getTimestamp("write_date"));
-				post.setIs_notice(rs.getBoolean("is_notice"));
+				post.set_notice(rs.getBoolean("is_notice"));
 				post.setViews(rs.getLong("views"));
 				post.setOrigin_file_name(rs.getString("origin_file_name"));
 				post.setSystem_file_name(rs.getString("system_file_name"));
@@ -212,10 +212,10 @@ public class PostDAO {
 		}
 	}
 	
-	public ArrayList<PostVO> getNoticeBoard(){
+	public ArrayList<Post> getNoticeBoard(){
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
-		ArrayList<PostVO> list = new ArrayList<PostVO>();
+		ArrayList<Post> list = new ArrayList<Post>();
 		try {
 			String sql = "select * from posts where blind=0 and board_name=\"공지게시판\" order by write_date desc limit 5";
 			
@@ -223,14 +223,14 @@ public class PostDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				PostVO post = new PostVO();
+				Post post = new Post();
 				post.setPid(rs.getInt("pid"));
 				post.setWriter(rs.getString("writer"));
 				post.setBoard_name("공지게시판");
 				post.setTitle(rs.getString("title"));
 				post.setContent(rs.getString("content"));
 				post.setWrite_date(rs.getTimestamp("write_date"));
-				post.setIs_notice(rs.getBoolean("is_notice"));
+				post.set_notice(rs.getBoolean("is_notice"));
 				post.setViews(rs.getLong("views"));
 				post.setOrigin_file_name(rs.getString("origin_file_name"));
 				post.setSystem_file_name(rs.getString("system_file_name"));
@@ -243,10 +243,10 @@ public class PostDAO {
 			return null;
 		}
 	}
-	public ArrayList<PostVO> getFreeBoard(){
+	public ArrayList<Post> getFreeBoard(){
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
-		ArrayList<PostVO> list = new ArrayList<PostVO>();
+		ArrayList<Post> list = new ArrayList<Post>();
 		try {
 			String sql = "select * from posts where blind=0 and board_name=\"자유게시판\" order by write_date desc limit 5";
 			
@@ -254,14 +254,14 @@ public class PostDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				PostVO post = new PostVO();
+				Post post = new Post();
 				post.setPid(rs.getInt("pid"));
 				post.setWriter(rs.getString("writer"));
 				post.setBoard_name("자유게시판");
 				post.setTitle(rs.getString("title"));
 				post.setContent(rs.getString("content"));
 				post.setWrite_date(rs.getTimestamp("write_date"));
-				post.setIs_notice(rs.getBoolean("is_notice"));
+				post.set_notice(rs.getBoolean("is_notice"));
 				post.setViews(rs.getLong("views"));
 				post.setOrigin_file_name(rs.getString("origin_file_name"));
 				post.setSystem_file_name(rs.getString("system_file_name"));
@@ -275,10 +275,10 @@ public class PostDAO {
 		}
 	}
 	
-	public ArrayList<PostVO> getMyPosts(String writer){
+	public ArrayList<Post> getMyPosts(String writer){
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
-		ArrayList<PostVO> list = new ArrayList<PostVO>();
+		ArrayList<Post> list = new ArrayList<Post>();
 		try {
 			String sql = "select * from posts where writer = ?";
 			
@@ -286,14 +286,14 @@ public class PostDAO {
 			pstmt.setString(1, writer);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				PostVO post = new PostVO();
+				Post post = new Post();
 				post.setPid(rs.getInt("pid"));
 				post.setWriter(rs.getString("writer"));
 				post.setBoard_name(rs.getString("board_name"));
 				post.setTitle(rs.getString("title"));
 				post.setContent(rs.getString("content"));
 				post.setWrite_date(rs.getTimestamp("write_date"));
-				post.setIs_notice(rs.getBoolean("is_notice"));
+				post.set_notice(rs.getBoolean("is_notice"));
 				post.setViews(rs.getLong("views"));
 				post.setOrigin_file_name(rs.getString("origin_file_name"));
 				post.setSystem_file_name(rs.getString("system_file_name"));

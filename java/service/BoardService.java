@@ -4,18 +4,18 @@ package service;
 import java.util.HashMap;
 
 import dao.BoardDAO;
-import vo.BoardVO;
+import vo.Board;
 
 public class BoardService {
-	public static boolean createboard(BoardVO board) {
+	public static boolean createboard(Board board) {
 		BoardDAO dao = BoardDAO.getInstance();
 		return dao.create_board(board);
 	}
-	public static boolean deleteBoard(BoardVO board) {
+	public static boolean deleteBoard(Board board) {
 		BoardDAO dao = BoardDAO.getInstance();
 		return dao.delete_board(board);
 	}
-	public static boolean updateboard(BoardVO board,int rp,int wp,int mp,int cp) {
+	public static boolean updateboard(Board board,int rp,int wp,int mp,int cp) {
 		BoardDAO dao = BoardDAO.getInstance();
 		return dao.update_board(board, rp, wp, mp,cp);
 	}

@@ -3,7 +3,7 @@
 <%@ include file="../semipage/header.jsp" %>
 <%@ include file="../semipage/nav.jsp" %>
 <%
-	ArrayList<NotiVO> notilist = (ArrayList<NotiVO>)request.getAttribute("notilist");
+ArrayList<Noti> notilist = (ArrayList<Noti>)request.getAttribute("notilist");
 %>
 <div class="inmain">
 <span class="badge badge-pill badge-primary">안읽은 공지 알림</span>
@@ -21,7 +21,8 @@
 	</thead>
 	<%
 	for(int i=0;i<notilist.size();i++){ // 공지알림인지 댓글 알림인지 읽은 알림인지 명확히 구분 필요
-		NotiVO noti = notilist.get(i);%>
+			Noti noti = notilist.get(i);
+	%>
 		<%if(noti.isNotice() && !noti.isRead()){ %>
 		<tr class="row bg-primary notice">
 			<c:set var="sender" value="<%=noti.getSender() %>"/>

@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 import db.DB;
-import vo.ScheduleVO;
+import vo.Schedule;
 
 public class ScheduleDAO {
 	private static ScheduleDAO dao;
@@ -18,7 +18,7 @@ public class ScheduleDAO {
 		}
 		return dao;
 	}
-	public boolean create(ScheduleVO schedule) {
+	public boolean create(Schedule schedule) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -28,7 +28,7 @@ public class ScheduleDAO {
 			pstmt.setString(2, schedule.getTitle());
 			pstmt.setString(3,schedule.getPlace());
 			pstmt.setString(4, schedule.getContent());
-			pstmt.setBoolean(5, schedule.isIs_ob());
+			pstmt.setBoolean(5, schedule.is_ob());
 			pstmt.executeUpdate();
 			return true;
 		}catch(Exception e) {
@@ -37,7 +37,7 @@ public class ScheduleDAO {
 		}
 	}
 	
-	public boolean update(ScheduleVO schedule) {
+	public boolean update(Schedule schedule) {
 		if(delete(schedule)) {
 			return create(schedule);
 		}else {
@@ -45,7 +45,7 @@ public class ScheduleDAO {
 		}
 	}
 	
-	public boolean delete(ScheduleVO schedule) {
+	public boolean delete(Schedule schedule) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -63,10 +63,10 @@ public class ScheduleDAO {
 		}
 	}
 	
-	public ArrayList<ScheduleVO> getScheduleList(String what, int year, int month){
+	public ArrayList<Schedule> getScheduleList(String what, int year, int month){
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
-		ArrayList<ScheduleVO> list = new ArrayList<ScheduleVO> ();
+		ArrayList<Schedule> list = new ArrayList<Schedule> ();
 		try {
 			String sql = "select * from schedule where year(s_date)=? and month(s_date)=? and is_ob = ?";
 			if(what.contentEquals("all")) {
@@ -84,13 +84,13 @@ public class ScheduleDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				ScheduleVO sc = new ScheduleVO();
+				Schedule sc = new Schedule();
 				sc.setSid(rs.getInt("sid"));
 				sc.setS_date(rs.getDate("s_date"));
 				sc.setTitle(rs.getString("title"));
 				sc.setPlace(rs.getString("place"));
 				sc.setContent(rs.getString("content"));
-				sc.setIs_ob(rs.getBoolean("is_ob"));
+				sc.set_ob(rs.getBoolean("is_ob"));
 				list.add(sc);
 			}
 			return list;
@@ -101,7 +101,7 @@ public class ScheduleDAO {
 		}
 	}
 	
-	public ScheduleVO getSchedule(Date date) {
+	public Schedule getSchedule(Date date) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -109,14 +109,14 @@ public class ScheduleDAO {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setDate(1, date);
 			ResultSet rs = pstmt.executeQuery();
-			ScheduleVO sc = new ScheduleVO();
+			Schedule sc = new Schedule();
 			while(rs.next()) {
 				sc.setSid(rs.getInt("sid"));
 				sc.setS_date(rs.getDate("s_date"));
 				sc.setTitle(rs.getString("title"));
 				sc.setPlace(rs.getString("place"));
 				sc.setContent(rs.getString("content"));
-				sc.setIs_ob(rs.getBoolean("is_ob"));
+				sc.set_ob(rs.getBoolean("is_ob"));
 			}
 			return sc;
 		}catch(Exception e) {
@@ -125,7 +125,7 @@ public class ScheduleDAO {
 		}
 	}
 	
-	public ScheduleVO getSchedule2(int sid) {
+	public Schedule getSchedule2(int sid) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -133,14 +133,14 @@ public class ScheduleDAO {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, sid);
 			ResultSet rs = pstmt.executeQuery();
-			ScheduleVO sc = new ScheduleVO();
+			Schedule sc = new Schedule();
 			while(rs.next()) {
 				sc.setSid(rs.getInt("sid"));
 				sc.setS_date(rs.getDate("s_date"));
 				sc.setTitle(rs.getString("title"));
 				sc.setPlace(rs.getString("place"));
 				sc.setContent(rs.getString("content"));
-				sc.setIs_ob(rs.getBoolean("is_ob"));
+				sc.set_ob(rs.getBoolean("is_ob"));
 			}
 			return sc;
 		}catch(Exception e) {
@@ -149,7 +149,7 @@ public class ScheduleDAO {
 		}
 	}
 	
-	public ScheduleVO nextSchedule(Date date) {
+	public Schedule nextSchedule(Date date) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -157,14 +157,14 @@ public class ScheduleDAO {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setDate(1, date);
 			ResultSet rs = pstmt.executeQuery();
-			ScheduleVO sc = new ScheduleVO();
+			Schedule sc = new Schedule();
 			while(rs.next()) {
 				sc.setSid(rs.getInt("sid"));
 				sc.setS_date(rs.getDate("s_date"));
 				sc.setTitle(rs.getString("title"));
 				sc.setPlace(rs.getString("place"));
 				sc.setContent(rs.getString("content"));
-				sc.setIs_ob(rs.getBoolean("is_ob"));
+				sc.set_ob(rs.getBoolean("is_ob"));
 			}
 			return sc;
 		}catch(Exception e) {
@@ -173,7 +173,7 @@ public class ScheduleDAO {
 		}
 	}
 	
-	public ScheduleVO preSchedule(Date date) {
+	public Schedule preSchedule(Date date) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -181,14 +181,14 @@ public class ScheduleDAO {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setDate(1, date);
 			ResultSet rs = pstmt.executeQuery();
-			ScheduleVO sc = new ScheduleVO();
+			Schedule sc = new Schedule();
 			while(rs.next()) {
 				sc.setSid(rs.getInt("sid"));
 				sc.setS_date(rs.getDate("s_date"));
 				sc.setTitle(rs.getString("title"));
 				sc.setPlace(rs.getString("place"));
 				sc.setContent(rs.getString("content"));
-				sc.setIs_ob(rs.getBoolean("is_ob"));
+				sc.set_ob(rs.getBoolean("is_ob"));
 			}
 			return sc;
 		}catch(Exception e) {
@@ -197,7 +197,7 @@ public class ScheduleDAO {
 		}
 	}
 	
-	public boolean is_ob(ScheduleVO schedule) {
+	public boolean is_ob(Schedule schedule) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {

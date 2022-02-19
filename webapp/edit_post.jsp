@@ -3,15 +3,14 @@
 	<%@ include file="WEB-INF/semipage/header.jsp" %>
 	<%@ include file="WEB-INF/semipage/nav.jsp" %>
     <%
-	PostDAO pdao=PostDAO.getinstance();
-	PostVO post = pdao.getPost(Integer.parseInt(request.getParameter("pid")));
-	if(!is_login){
-		response.sendRedirect("index.jsp");
-	}
-	String board_name = request.getParameter("board_name");
-	String csrf_token = (String)session.getAttribute("csrf_token");
-	
-%>
+    PostDAO pdao=PostDAO.getinstance();
+    	Post post = pdao.getPost(Integer.parseInt(request.getParameter("pid")));
+    	if(!is_login){
+    		response.sendRedirect("index.jsp");
+    	}
+    	String board_name = request.getParameter("board_name");
+    	String csrf_token = (String)session.getAttribute("csrf_token");
+    %>
 
 <div class="inmain d-none">
 <br>
