@@ -8,6 +8,7 @@ import java.util.LinkedList;
 
 import db.DB;
 import vo.Board;
+import vo.Permission;
 
 public class BoardDAO {
 	private static BoardDAO dao;
@@ -28,10 +29,10 @@ public class BoardDAO {
 		try {
 			pstmt = conn.prepareStatement("insert into boardlist value(?,?,?,?,?,?)");
 			pstmt.setString(1, board.getBoard_name());
-			pstmt.setInt(2, board.getWrite_permission());
-			pstmt.setInt(3, board.getRead_permission());
-			pstmt.setInt(4, board.getManage_permission());
-			pstmt.setInt(5, board.getComment_permission());
+			pstmt.setInt(2, Permission.permissionToInt(board.getWritePermission()));
+			pstmt.setInt(3, Permission.permissionToInt(board.getReadPermission()));
+			pstmt.setInt(4, Permission.permissionToInt(board.getManagePermission()));
+			pstmt.setInt(5, Permission.permissionToInt(board.getCommentPermission()));
 			pstmt.setString(6, board.getBoard_description());
 			if(pstmt.executeUpdate()==1) {
 				return true;
@@ -60,17 +61,17 @@ public class BoardDAO {
 		}
 	}
 	
-	public boolean update_board(Board board, int rp,int wp,int mp,int cp) { // db에는 퍼미션의 타입이 tinyint(4)로 되어있음. 문제소지있으니 통일 필요.
+	public boolean update_board(Board board) { // db에는 퍼미션의 타입이 tinyint(4)로 되어있음. 문제소지있으니 통일 필요.
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
 			String sql = "update boardlist set read_permission = ?,write_permission = ?,manage_permission = ?,comment_permission=?, board_description = ? "
 					+ "where board_name = ?";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, rp);
-			pstmt.setInt(2, wp);
-			pstmt.setInt(3, mp);
-			pstmt.setInt(4, cp);
+			pstmt.setInt(1, Permission.permissionToInt(board.getReadPermission()));
+			pstmt.setInt(2, Permission.permissionToInt(board.getWritePermission()));
+			pstmt.setInt(3, Permission.permissionToInt(board.getManagePermission()));
+			pstmt.setInt(4, Permission.permissionToInt(board.getCommentPermission()));
 			pstmt.setString(5, board.getBoard_description());
 			pstmt.setString(6, board.getBoard_name());
 			
@@ -98,10 +99,10 @@ public class BoardDAO {
 			Board board = new Board();
 			while(rs.next()) {
 				board.setBoard_name(rs.getString("board_name"));
-				board.setRead_permission(rs.getInt("read_permission"));
-				board.setWrite_permission(rs.getInt("write_permission"));
-				board.setManage_permission(rs.getInt("manage_permission"));
-				board.setComment_permission(rs.getInt("comment_permission"));
+				board.setReadPermission(Permission.intToPermission(rs.getInt("read_permission")));
+				board.setWritePermission(Permission.intToPermission(rs.getInt("write_permission")));
+				board.setManagePermission(Permission.intToPermission(rs.getInt("manage_permission")));
+				board.setCommentPermission(Permission.intToPermission(rs.getInt("comment_permission")));
 				board.setBoard_description(rs.getString("board_description"));
 			}
 			return board;
@@ -124,10 +125,10 @@ public class BoardDAO {
 			while(rs.next()) {
 				Board board = new Board();
 				board.setBoard_name(rs.getString("board_name"));
-				board.setRead_permission(rs.getInt("read_permission"));
-				board.setWrite_permission(rs.getInt("write_permission"));
-				board.setManage_permission(rs.getInt("manage_permission"));
-				board.setComment_permission(rs.getInt("comment_permission"));
+				board.setReadPermission(Permission.intToPermission(rs.getInt("read_permission")));
+				board.setWritePermission(Permission.intToPermission(rs.getInt("write_permission")));
+				board.setManagePermission(Permission.intToPermission(rs.getInt("manage_permission")));
+				board.setCommentPermission(Permission.intToPermission(rs.getInt("comment_permission")));
 				board.setBoard_description(rs.getString("board_description"));
 				boardlist.add(board);
 			}

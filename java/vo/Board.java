@@ -9,11 +9,12 @@ import lombok.Setter;
 public class Board implements VO{ 
 	
 	private String board_name; //게시판 이름
-	private int write_permission; // 게시판 쓰기 권한
-	private int read_permission; //게시판 읽기 권한
-	private int manage_permission; // 게시판 관리권한
-	private int comment_permission; // 게시판댓글쓰기권한
 	private String board_description; // 게시판 설명
+	private Permission writePermission;
+	private Permission readPermission;
+	private Permission managePermission;
+	private Permission commentPermission;
+	
 	
 	@Override
 	public String toJson() {

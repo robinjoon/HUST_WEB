@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import db.DB;
 import vo.Problem;
 import vo.Member;
+import vo.Permission;
 
 public class ProblemDAO {
 	private static ProblemDAO dao;
@@ -209,7 +210,7 @@ public class ProblemDAO {
 				member.setInterest(rs.getString("interest"));
 				member.setAddress(rs.getString("address"));
 				member.setAddress_now(rs.getString("address_now"));
-				member.setPermission(rs.getInt("permission"));
+				member.setPermission(Permission.intToPermission(rs.getInt("permission")));
 				member.setEtc(rs.getString("etc"));
 				member.setProb_score(rs.getLong("prob_score"));
 				member.setSolved_prob(rs.getString("solved_prob"));

@@ -15,9 +15,9 @@ public class BoardService {
 		BoardDAO dao = BoardDAO.getInstance();
 		return dao.delete_board(board);
 	}
-	public static boolean updateboard(Board board,int rp,int wp,int mp,int cp) {
+	public static boolean updateboard(Board board) {
 		BoardDAO dao = BoardDAO.getInstance();
-		return dao.update_board(board, rp, wp, mp,cp);
+		return dao.update_board(board);
 	}
 	public static HashMap<String,Integer> getPermissions_by_Pid(int pid){
 		BoardDAO dao = BoardDAO.getInstance();

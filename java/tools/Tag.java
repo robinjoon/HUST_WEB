@@ -7,7 +7,7 @@ import service.MemberService;
 import vo.Member;
 
 public class Tag {
-	public static ArrayList<String> extraction(String content,int permission){
+	public static ArrayList<String> extraction(String content,int permission){ // 배개변수 변경 필요...
 		ArrayList<String> list = new ArrayList<String>();
 		StringTokenizer st = new StringTokenizer(content,",");
 		while(st.hasMoreTokens()) {

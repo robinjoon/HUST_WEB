@@ -22,7 +22,6 @@ public class Member implements VO{
 	private String interest; // 관심분야
 	private String address; // 주소(본가)
 	private String address_now; //주소(학기중)
-	private int permission;
 	/*
 	 0 : 게스트 : 가입한 유저. 사용가능 기능 = 회원탈퇴분
 	 1 : 신입회원 : 관리자가 승인한 신규회원.
@@ -32,7 +31,7 @@ public class Member implements VO{
 	 5 : OB운영진 : OB운영진. OB회원관리, 정회원의 OB회원의로의 승급 권한 가짐. YB운영진과는 별도의 존재. 서로 별도의 권한을 가짐. 신입회원>정회원, 정회원>YB운영진의 변경은 불가.
 	 6 : 관리자 : 사이트 총 관리자. 사이트 메인화면 편집, 기타 회원의 관리, 등등의 모든 권한을 가짐. 홈페이지 개발자의 권한. 
 	 */
-	private Permission permissionEnum;
+	private Permission permission;
 	private String etc; // 기타 메모할사항
 	private long prob_score; // 문제은행 점수
 	private String solved_prob=""; //푼 문제 목록. ,를 구분자로 함.
@@ -43,7 +42,7 @@ public class Member implements VO{
 	
 	public Member(String id, String pw, String name, int birthY, int admissionY, int joinY, String phone,
 			String email, String scholastic, int school_year, String interest, String address, String address_now,
-			int permission, String etc, int prob_score) {
+			Permission permission, String etc, int prob_score) {
 		this.id = id;
 		this.pw = pw;
 		this.name = name;

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import auth.AuthManager;
 import service.CommentService;
 import service.MemberService;
 import service.PostService;
@@ -16,6 +17,7 @@ import tools.Secure;
 import tools.Sessions;
 import vo.Comment;
 import vo.Member;
+import vo.Permission;
 import vo.Post;
 
 import java.net.*;
@@ -90,13 +92,13 @@ public class MemberController implements Controller {
 		}catch(NumberFormatException e) {
 			school_year=0;
 		}
-		if(!id.matches("[0-9|a-z|A-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힝]*")||!name.matches("[0-9|a-z|A-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힝]*")){
+		if(idCheck(id) || nameCheck(name)){
 			request.setAttribute("err_body", "아이디와 이름에는 숫자,알파벳대소문자,한글만 사용할 수 있습니다.");
 			request.setAttribute("forward_url", "join.jsp");
 			HttpUtil.forward(request, response, "/WEB-INF/pages/fail.jsp");
 			return;
 		}
-		Member member = new Member(id,pw,name,birthY,admissionY,joinY,phone,email,scholastic,school_year,interest,address,address_now,0,etc,0);
+		Member member = new Member(id,pw,name,birthY,admissionY,joinY,phone,email,scholastic,school_year,interest,address,address_now,Permission.GUEST,etc,0);
 		member.setMypost_comment_noti_allow(mypost_comment_noti_allow);
 		member.setMycomment_comment_noti_allow(mycomment_comment_noti_allow);
 		member.setCall_noti_allow(call_noti_allow);
@@ -108,12 +110,19 @@ public class MemberController implements Controller {
 			HttpUtil.forward(request, response, "/WEB-INF/pages/fail.jsp");
 		}
 	}
+	private boolean idCheck(String id) {
+		return !id.matches("[0-9|a-z|A-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힝]*");
+	}
+	private boolean nameCheck(String name) {
+		return !name.matches("[0-9|a-z|A-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힝]*");
+	}
+	
 	private void read(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
 		String memberid = request.getParameter("member");
 		HttpSession session = request.getSession();
-		Integer permission = (int)session.getAttribute("permission");
-		if(permission>=1) {
+		String id = (String)session.getAttribute("id");
+		if(AuthManager.canReadMemberList(MemberService.getMember(id))) {
 			Member member = MemberService.getMember(memberid);
 			ArrayList<Member> list = new ArrayList<Member>();
 			list.add(member);
@@ -126,7 +135,7 @@ public class MemberController implements Controller {
 	private void read_me(HttpServletRequest request,HttpServletResponse response) {
 		HttpSession session = request.getSession();
 		String id = (String)session.getAttribute("id");
-		if(id!=null) { // 로그인 확인
+		if(AuthManager.loginCheck(request)) { // 로그인 확인
 			Member member = MemberService.getMember(id);
 			ArrayList<Post> list = PostService.getMyPosts(id);
 			ArrayList<Comment> clist = CommentService.getMyComments(id);
@@ -150,7 +159,8 @@ public class MemberController implements Controller {
 		ArrayList<Member> list = null;
 		HttpSession session = request.getSession();
 		Integer per = (Integer)session.getAttribute("permission"); // 사용자의 권한
-		if(per==null||per<1) { // 로그인X
+		String id = (String)session.getAttribute("id");
+		if(AuthManager.canReadMemberList(MemberService.getMember(id))) { // 로그인X
 			response.sendRedirect("index.jsp");
 			return;
 		}
@@ -212,7 +222,7 @@ public class MemberController implements Controller {
 		}catch(NumberFormatException e) {
 			school_year=0;
 		}
-		Member member = new Member(id,pw,name,birthY,admissionY,joinY,phone,email,scholastic,school_year,interest,address,address_now,0,etc,0);
+		Member member = new Member(id,pw,name,birthY,admissionY,joinY,phone,email,scholastic,school_year,interest,address,address_now,Permission.GUEST,etc,0);
 		member.setMypost_comment_noti_allow(mypost_comment_noti_allow);
 		member.setMycomment_comment_noti_allow(mycomment_comment_noti_allow);
 		member.setCall_noti_allow(call_noti_allow);
