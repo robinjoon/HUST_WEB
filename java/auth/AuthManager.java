@@ -7,8 +7,8 @@ import vo.*;
 
 public class AuthManager {
 	
-	public static boolean canReadMemberList(Member member) {
-		Permission memberPermission = member.getPermission();
+	public static boolean canReadMemberList(Auth auth) {
+		Permission memberPermission = auth.getPermission();
 		if(memberPermission.compareTo(Permission.NEWBIE)>=0) {
 			return true;
 		}else {
@@ -16,27 +16,16 @@ public class AuthManager {
 		}
 	}
 	
-	public static boolean loginCheck(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		Integer permission = (int)session.getAttribute("permission");
-		String id  = (String)session.getAttribute("id");
-		if(permission!=null && id !=null) {
-			return true;
-		}else {
-			return false;
-		}
+	public static boolean loginCheck(Auth auth) {
+		return auth.isLogin();
 	}
 	
-	public static boolean csrfCheck(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		String server = (String)session.getAttribute("csrf_token");
-		String client = request.getParameter("csrf_token");
-		return server.contentEquals(client);
+	public static boolean csrfCheck(Auth auth) {
+		return auth.isSafeFromCSRF();
 	}
-	
-	public static boolean canMakeBoard(Member member, Board board) {
+	public static boolean canMakeBoard(Auth auth, Board board) {
 		
-		Permission memberPermission = member.getPermission();
+		Permission memberPermission = auth.getPermission();
 		Permission readPermission = board.getReadPermission();
 		Permission writePermission = board.getWritePermission();
 		Permission managePermission = board.getManagePermission();
@@ -56,8 +45,8 @@ public class AuthManager {
 		
 	}
 	
-	public static boolean canManage(Member member, Board board) {
-		Permission memberPermission = member.getPermission();
+	public static boolean canManageBoard(Auth auth, Board board) {
+		Permission memberPermission = auth.getPermission();
 		Permission boardPermission = board.getManagePermission();
 		if(memberPermission == boardPermission) {
 			return true;
@@ -68,10 +57,12 @@ public class AuthManager {
 		}
 	}
 	
-	public static boolean canRead(Member member, Board board) {
-		Permission memberPermission = member.getPermission();
+	
+	
+	public static boolean canReadBoard(Auth auth, Board board) {
+		Permission memberPermission = auth.getPermission();
 		Permission boardPermission = board.getReadPermission();
-		if(memberPermission == boardPermission) {
+		if(memberPermission.compareTo(boardPermission)>=0) {
 			return true;
 		}else if(memberPermission == Permission.GENREAL_ADMIN) {
 			return true;
@@ -80,10 +71,10 @@ public class AuthManager {
 		}
 	}
 	
-	public static boolean canWrite(Member member, Board board) {
-		Permission memberPermission = member.getPermission();
+	public static boolean canWriteBoard(Auth auth, Board board) {
+		Permission memberPermission = auth.getPermission();
 		Permission boardPermission = board.getWritePermission();
-		if(memberPermission == boardPermission) {
+		if(memberPermission.compareTo(boardPermission)>=0) {
 			return true;
 		}else if(memberPermission == Permission.GENREAL_ADMIN) {
 			return true;
@@ -92,10 +83,10 @@ public class AuthManager {
 		}
 	}
 	
-	public static boolean canComment(Member member, Board board) {
-		Permission memberPermission = member.getPermission();
+	public static boolean canCommentBoard(Auth auth, Board board) {
+		Permission memberPermission = auth.getPermission();
 		Permission boardPermission = board.getCommentPermission();
-		if(memberPermission == boardPermission) {
+		if(memberPermission.compareTo(boardPermission)>=0) {
 			return true;
 		}else if(memberPermission == Permission.GENREAL_ADMIN) {
 			return true;
