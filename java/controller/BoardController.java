@@ -16,7 +16,6 @@ public class BoardController implements Controller {
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response, String action)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		try {
 			Auth auth = new Auth(request);
 			
