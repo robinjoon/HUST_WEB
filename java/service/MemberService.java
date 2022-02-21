@@ -14,7 +14,7 @@ public class MemberService {
 		MemberDAO dao = MemberDAO.getInstance();
 		return dao.join_member(member);
 	}
-	public static int login(Member member) {//return == -1 ==> 로그인 실패. else 사용자 권한 반환 
+	public static int login(Member member) throws Exception {
 		MemberDAO dao = MemberDAO.getInstance();
 		return dao.login_member(member);
 	}

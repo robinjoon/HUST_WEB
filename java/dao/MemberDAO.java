@@ -351,7 +351,7 @@ public class MemberDAO {
 			return null;
 		}
 	}	
-	public int login_member(Member member) { //return == -1 ==> 로그인 실패. else 사용자 권한 반환 
+	public int login_member(Member member) throws Exception { 
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -366,10 +366,13 @@ public class MemberDAO {
 			while(rs.next()) {
 				per = rs.getInt("permission");
 			}
+			if(per==-1) {
+				throw new Exception("login fail");
+			}
 			return per;
 		}catch(Exception e) {
 			e.printStackTrace();
-			return -1;
+			throw new Exception("login fail");
 		}
 	}
 	public boolean update_per(Member member,int per) {
