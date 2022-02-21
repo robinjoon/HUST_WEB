@@ -2,8 +2,12 @@
 package vo;
 
 import java.sql.Timestamp;
+
+import javax.servlet.http.HttpServletRequest;
+
 import lombok.Getter;
 import lombok.Setter;
+import tools.HttpUtil;
 
 @Getter
 @Setter
@@ -39,6 +43,66 @@ public class Member implements VO{
 	private boolean mypost_comment_noti_allow; // 내 게시글에 달린 댓글 알림 허용 여부.
 	private boolean mycomment_comment_noti_allow; // 내가 작성한 댓글(대댓글 포함)에 달린 대댓글 알림 허용여부.
 	private boolean call_noti_allow; // 특정 게시글에서 댓글로 다른 회원이 나를 호출하는 것의 허용여부.
+	
+	public Member(HttpServletRequest request, Permission permission, boolean pwCheckEnable) throws Exception {
+		String id,pw,pw_check,name,phone,email,scholastic,interest,address,address_now,etc;
+		Integer birthY,admissionY,joinY,school_year;
+		boolean mypost_comment_noti_allow = Boolean.parseBoolean(request.getParameter("mypost_comment_noti_allow"));
+		boolean mycomment_comment_noti_allow = Boolean.parseBoolean(request.getParameter("mycomment_comment_noti_allow"));
+		boolean call_noti_allow = Boolean.parseBoolean(request.getParameter("call_noti_allow"));
+		
+		id = request.getParameter("id");
+		pw = request.getParameter("pw");
+		pw_check = request.getParameter("pw_check");
+		if(pwCheckEnable && !pw.equals(pw_check)) {
+			throw new Exception();
+		}
+		name = request.getParameter("name"); 
+		phone = request.getParameter("phone");
+		email = request.getParameter("email"); scholastic = request.getParameter("scholastic");
+		interest = request.getParameter("interest");
+		address = request.getParameter("address");address_now = request.getParameter("address_now");
+		etc = request.getParameter("etc");
+		try {
+			birthY = Integer.parseInt(request.getParameter("birthY"));
+		}catch(NumberFormatException e) {
+			birthY=0;
+		}
+		try {
+			admissionY = Integer.parseInt(request.getParameter("admissionY"));
+		}catch(NumberFormatException e) {
+			admissionY=0;
+		}
+		try {
+			joinY = Integer.parseInt(request.getParameter("joinY"));
+		}catch(NumberFormatException e) {
+			joinY=0;
+		}
+		try {
+			school_year = Integer.parseInt(request.getParameter("school_year"));
+		}catch(NumberFormatException e) {
+			school_year=0;
+		}
+		this.id = id;
+		this.pw = pw;
+		this.name = name;
+		this.birthY = birthY;
+		this.admissionY = admissionY;
+		this.joinY = joinY;
+		this.phone = phone;
+		this.email = email;
+		this.scholastic = scholastic;
+		this.school_year = school_year;
+		this.interest = interest;
+		this.address = address;
+		this.address_now = address_now;
+		this.etc = etc;
+		this.mycomment_comment_noti_allow = mycomment_comment_noti_allow;
+		this.mypost_comment_noti_allow = mypost_comment_noti_allow;
+		this.call_noti_allow = call_noti_allow;
+		this.permission = permission;
+		this.prob_score =0;
+	}
 	
 	public Member(String id, String pw, String name, int birthY, int admissionY, int joinY, String phone,
 			String email, String scholastic, int school_year, String interest, String address, String address_now,
