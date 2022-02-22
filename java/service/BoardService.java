@@ -27,4 +27,8 @@ public class BoardService {
 		BoardDAO dao = BoardDAO.getInstance();
 		return dao.getPermissions_by_name(board_name);
 	}
+	public static Board getBoard(String board_name){
+		BoardDAO dao = BoardDAO.getInstance();
+		return dao.getBoard(board_name);
+	}
 }
