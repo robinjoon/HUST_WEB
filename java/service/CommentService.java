@@ -18,7 +18,7 @@ public class CommentService {
 		CommentDAO dao = CommentDAO.getInstance();
 		return dao.delete_comment(comment);
 	}
-	public static ArrayList<ArrayList<Comment>> getCommentList_v2(int pid){
+	public static ArrayList<ArrayList<Comment>> getCommentList_v2(int pid) throws Exception{
 		CommentDAO dao = CommentDAO.getInstance();
 		return dao.getCommentList_v2(pid);
 	}

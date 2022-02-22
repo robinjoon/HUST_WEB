@@ -123,7 +123,7 @@ public class CommentDAO {
 	}
 	
 	
-	public ArrayList<ArrayList<Comment>> getCommentList_v2(int pid){ //게시글 댓글리스트 불러오기 
+	public ArrayList<ArrayList<Comment>> getCommentList_v2(int pid) throws Exception{ //게시글 댓글리스트 불러오기 
 		/*
 		 * 댓글리스트는 이중 ArrayList로 표현됨. 내부 ArrayList의 첫번째 원소는 부모댓글(원댓글)이 없는 댓글이고,
 		 * 나머지 원소들은 모두 첫번재 원소를 부모댓글로 하는 자식댓글(대댓글)들임.
@@ -133,46 +133,41 @@ public class CommentDAO {
 		ArrayList<ArrayList<Comment>> commentlist = new ArrayList<ArrayList<Comment>>();
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
-		try {
-			String sql = "select * from comments where pid = ? and parent!=-1";
-			
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, pid);
-			
-			ResultSet rs = pstmt.executeQuery();
-			
-			ArrayList<Comment> comments = getComments_no_parent(pid); // 부모댓글들을 모아둔 리스트
-			for(int i=0;i<comments.size();i++) { // 부모댓글들을 내부 ArrayList에 각각 집어넣고, 이런 내부 리스트들을 바깥리스트에 집어넣음.
-				ArrayList<Comment> comment_group = new ArrayList<Comment>();
-				comment_group.add(comments.get(i));
-				commentlist.add(comment_group);
-			}
-			ArrayList<Comment> tmp = new ArrayList<Comment>(); // 자식댓글 임시저장하는 리스트
-			while(rs.next()) { // 자식댓글들을 임시저장 리스트에 저장.
-				Comment comment = new Comment();
-				comment.setPid(rs.getInt("pid"));
-				comment.setParent(rs.getLong("parent"));
-				comment.setCid(rs.getLong("cid"));
-				comment.setWriter(rs.getString("writer"));
-				comment.setContent(rs.getString("content"));
-				comment.setWrite_date(rs.getTimestamp("write_date"));
-				comment.setBlind(rs.getBoolean("blind"));
-				tmp.add(comment);
-			}
-			for(int i=0;i<tmp.size();i++) { // 임시저장리스트로부터 자식댓글들을 각자의 부모댓글이 포함된 리스트로 옮김.
-				Comment comment = tmp.get(i);
-				for(int j =0;j<commentlist.size();j++) {
-					Comment parent = commentlist.get(j).get(0);
-					if(parent.getCid()==comment.getParent()) {
-						commentlist.get(j).add(comment);
-					}
+		String sql = "select * from comments where pid = ? and parent!=-1";
+		
+		pstmt = conn.prepareStatement(sql);
+		pstmt.setInt(1, pid);
+		
+		ResultSet rs = pstmt.executeQuery();
+		
+		ArrayList<Comment> comments = getComments_no_parent(pid); // 부모댓글들을 모아둔 리스트
+		for(int i=0;i<comments.size();i++) { // 부모댓글들을 내부 ArrayList에 각각 집어넣고, 이런 내부 리스트들을 바깥리스트에 집어넣음.
+			ArrayList<Comment> comment_group = new ArrayList<Comment>();
+			comment_group.add(comments.get(i));
+			commentlist.add(comment_group);
+		}
+		ArrayList<Comment> tmp = new ArrayList<Comment>(); // 자식댓글 임시저장하는 리스트
+		while(rs.next()) { // 자식댓글들을 임시저장 리스트에 저장.
+			Comment comment = new Comment();
+			comment.setPid(rs.getInt("pid"));
+			comment.setParent(rs.getLong("parent"));
+			comment.setCid(rs.getLong("cid"));
+			comment.setWriter(rs.getString("writer"));
+			comment.setContent(rs.getString("content"));
+			comment.setWrite_date(rs.getTimestamp("write_date"));
+			comment.setBlind(rs.getBoolean("blind"));
+			tmp.add(comment);
+		}
+		for(int i=0;i<tmp.size();i++) { // 임시저장리스트로부터 자식댓글들을 각자의 부모댓글이 포함된 리스트로 옮김.
+			Comment comment = tmp.get(i);
+			for(int j =0;j<commentlist.size();j++) {
+				Comment parent = commentlist.get(j).get(0);
+				if(parent.getCid()==comment.getParent()) {
+					commentlist.get(j).add(comment);
 				}
 			}
-			return commentlist;
-		}catch(Exception e) {
-			System.err.println(e);
-			return null;
 		}
+		return commentlist;
 	}
 	public Comment getComment(long cid) {
 		Connection conn = DB.getConnection();
