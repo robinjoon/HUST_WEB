@@ -45,7 +45,7 @@ public class PostDAO {
 			return false;
 		}
 	}
-	public int write_post_v2(Post post) { 
+	public int write_post_v2(Post post) throws Exception{ 
 		// 게시글 쓰기. 작성된 게시글의 게시글번호를 반환함.
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
@@ -61,29 +61,14 @@ public class PostDAO {
 			pstmt.setString(6, post.getSystem_file_name());
 			pstmt.setString(7, post.getBoard_name());
 			if(pstmt.executeUpdate()==1) {
-				String sql2 = "select pid from posts where writer=? and title=? and content=? and is_notice=?";
-				sql2 += " and origin_file_name=? and system_file_name=? and board_name =?";
-				PreparedStatement pstmt2;
-				pstmt2 = conn.prepareStatement(sql2);
-				pstmt2.setString(1, post.getWriter());
-				pstmt2.setString(2, post.getTitle());
-				pstmt2.setString(3, post.getContent());
-				pstmt2.setBoolean(4, post.is_notice());
-				pstmt2.setString(5, post.getOrigin_file_name());
-				pstmt2.setString(6, post.getSystem_file_name());
-				pstmt2.setString(7, post.getBoard_name());
-				ResultSet rs = pstmt2.executeQuery();
-				int ret = -1;
-				while(rs.next()) {
-					ret = rs.getInt("pid");
-				}
-				return ret;
+				ResultSet generatedKeys = pstmt.getGeneratedKeys();
+				return generatedKeys.getInt(1);
 			}else {
-				return -1;
+				throw new Exception("fail write post");
 			}
 		}catch(Exception e) {
 			System.err.println(e);
-			return -1;
+			throw new Exception("fail write post");
 		}
 	}
 	/*public boolean write_post2(PostVO post) { // 게시글 쓰기.

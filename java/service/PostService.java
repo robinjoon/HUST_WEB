@@ -10,7 +10,7 @@ public class PostService {
 		PostDAO dao = PostDAO.getinstance();
 		return dao.write_post(post);
 	}
-	public static int writepost_v2(Post post) {
+	public static int writepost_v2(Post post) throws Exception{
 		PostDAO dao = PostDAO.getinstance();
 		return dao.write_post_v2(post);
 	}
