@@ -63,13 +63,35 @@ public class PostController implements Controller {
 					}
 				}
 			}
-			
 		}catch(Exception e) {
 			e.printStackTrace();
+			HttpUtil.forward(request, response, "/WEB-INF/pages/fail.jsp");
 		}
 	}
 	private void create(HttpServletRequest request, HttpServletResponse response, Auth auth)
-			throws ServletException, IOException{
+			throws Exception{
+		Post post = uploadFileAndGetPostFromRequest(request);
+		String board_name = post.getBoard_name();
+		board = BoardService.getBoard(board_name);
+		if(!AuthManager.canManageBoard(auth, board)) {
+			post.set_notice(false);
+		}
+		boolean is_notice = post.is_notice();
+		if(AuthManager.canWriteBoard(auth, board)) {
+			int pid = PostService.writepost_v2(post);
+			if(is_notice && AuthManager.canManageBoard(auth, board)) {
+				senNotification(request, post);
+			}
+			request.setAttribute("ok_body", "작성 성공");
+			request.setAttribute("forward_url", "postview.do?pid="+pid+"&board_name="+board_name);
+			HttpUtil.forward(request, response, "/WEB-INF/pages/ok.jsp");
+		}else {
+			request.setAttribute("err_body", "쓰기권한이 없습니다.");
+			request.setAttribute("forward_url", "postsview.do?board_name="+board_name+"&page=1");
+			HttpUtil.forward(request, response, "/WEB-INF/pages/fail.jsp");
+		}
+	}
+	private Post uploadFileAndGetPostFromRequest(HttpServletRequest request) throws Exception {
 		HttpSession session = request.getSession();
 		String id = (String)session.getAttribute("id");
 		String savePath = getSavePathWhenCreate(request);
@@ -84,8 +106,7 @@ public class PostController implements Controller {
 		String system_file_name = multi.getFilesystemName("file");
 		if(writer.isBlank()||board_name.isBlank()||title.isBlank()||content.isBlank()) {
 			System.out.println(content);
-			HttpUtil.forward(request, response, "/WEB-INF/pages/fail.jsp");
-			return;
+			throw new Exception("no required data");
 		}
 		boolean is_notice = Boolean.parseBoolean(multi.getParameter("is_notice"));		
 		Post post = new Post();
@@ -97,40 +118,7 @@ public class PostController implements Controller {
 		post.setOrigin_file_name(origin_file_name!=null ? origin_file_name : ""); // 첨부파일이 없을 때 첨부파일의 이름을 공백으로 설정. 안하면 pid 가져오는 쿼리에서 null로인해 정상적인 값을 가져오지 못함. 
 		post.setSystem_file_name(system_file_name!=null ? system_file_name : "");
 		post.set_notice(is_notice);
-		board = BoardService.getBoard(board_name);
-		if(AuthManager.canWriteBoard(auth, board)) {
-			int pid = PostService.writepost_v2(post);
-			if (pid!=-1) {//작성성공
-				if(is_notice && AuthManager.canManageBoard(auth, board)) {
-					ArrayList<Member> memberlist = MemberService.getMemberList(7, "전체");
-					for(int i =0;i<memberlist.size();i++) {
-						Member member = memberlist.get(i);
-						if(!member.getScholastic().contentEquals("탈퇴") && AuthManager.canReadBoard(new Auth(member.getId(),member.getPermission()), board)) { // 탈퇴회원이나 게스트가 아닌사람에게만 알림 보냄.
-							Noti noti = new Noti();
-							noti.setSender(id);
-							noti.setReceiver(member.getId());
-							noti.setTitle(board_name+"에 새 공지가 등록되었습니다.");
-							noti.setBody(post.getContent());
-							noti.setUrl("postview.do?pid="+pid+"&board_name="+board_name);
-							noti.setDate(new java.sql.Date(new java.util.Date().getTime()));
-							noti.setNotice(true);
-							NotiService.send_noti(noti);
-						}
-					}
-				}
-				request.setAttribute("ok_body", "작성 성공");
-				request.setAttribute("forward_url", "postview.do?pid="+pid+"&board_name="+board_name);
-				HttpUtil.forward(request, response, "/WEB-INF/pages/ok.jsp");
-			} else {//작성실패
-				request.setAttribute("err_body", "db에러");
-				request.setAttribute("forward_url", "postsview.do?board_name="+board_name+"&page=1");
-				HttpUtil.forward(request, response, "/WEB-INF/pages/fail.jsp");
-			}
-		}else {
-			request.setAttribute("err_body", "쓰기권한이 없습니다.");
-			request.setAttribute("forward_url", "postsview.do?board_name="+board_name+"&page=1");
-			HttpUtil.forward(request, response, "/WEB-INF/pages/fail.jsp");
-		}
+		return post;
 	}
 	private String getSavePathWhenCreate(HttpServletRequest request) {
 		String savePath = request.getServletContext().getRealPath("data"); 
@@ -161,7 +149,25 @@ public class PostController implements Controller {
 		savePath = up;
 		return savePath;
 	}
-	
+	private void senNotification(HttpServletRequest request, Post post) {
+		int pid = post.getPid();
+		String boardName = post.getBoard_name();
+		ArrayList<Member> memberlist = MemberService.getMemberList(7, "전체");
+		for(Member member : memberlist) {
+			if(!member.getScholastic().contentEquals("탈퇴") && AuthManager.canReadBoard(new Auth(member.getId(),member.getPermission()), board)) { // 탈퇴회원이나 게스트가 아닌사람에게만 알림 보냄.
+				Noti noti = new Noti();
+				String id = (String)request.getSession().getAttribute("id");
+				noti.setSender(id);
+				noti.setReceiver(member.getId());
+				noti.setTitle(boardName+"에 새 공지가 등록되었습니다.");
+				noti.setBody(post.getContent());
+				noti.setUrl("postview.do?pid="+pid+"&board_name="+boardName);
+				noti.setDate(new java.sql.Date(new java.util.Date().getTime()));
+				noti.setNotice(true);
+				NotiService.send_noti(noti);
+			}
+		}
+	}
 	private void read(HttpServletRequest request, HttpServletResponse response, Auth auth)
 			throws Exception{
 		int pid = Integer.parseInt(request.getParameter("pid"));
@@ -173,24 +179,10 @@ public class PostController implements Controller {
 		}else {
 			if(post.isBlind()) { // 게시글이 삭제된 경우
 				if(AuthManager.canManageBoard(auth, board)) {
-					String content = post.getContent();
-					post.setContent("원래 제목 : "+post.getTitle()+"<br>"+post.getContent());
-					post.setTitle("이 게시글은 삭제된 게시글입니다.");
-					content = Secure.check_script(content);
-					post.setContent(content);
+					post = blindPostProcessing(auth, post);
 					request.setAttribute("post", post);
 					ArrayList<ArrayList<Comment>> comments = CommentService.getCommentList_v2(pid);
-					if(comments!=null) {
-						for(int i =0;i<comments.size();i++) {
-							ArrayList<Comment> child_comments = comments.get(i);
-							for(int j=0;j<child_comments.size();j++) {
-								Comment comment = child_comments.get(j);
-								if(comment.isBlind()) {
-									comment.setContent("삭제된 댓글입니다. 내용은 다음과 같습니다.\n"+comment.getContent());
-								}
-							}
-						}
-					}
+					comments = blindCommentProcessing(auth, comments);
 				}else { 
 					request.setAttribute("err_body", "삭제된 게시글입니다.");
 					request.setAttribute("forward_url", "postsview.do?board_name="+board_name+"&page=1");
@@ -200,17 +192,7 @@ public class PostController implements Controller {
 				post = checkCsrf(post);
 				request.setAttribute("post", post);
 				ArrayList<ArrayList<Comment>> comments = CommentService.getCommentList_v2(pid);
-				for(ArrayList<Comment> child_comments : comments) {
-					for(Comment comment : child_comments) {
-						if(comment.isBlind()) {
-							if(AuthManager.canManageBoard(auth, board)) {
-								comment.setContent("삭제된 댓글입니다. 내용은 다음과 같습니다.\n"+comment.getContent());
-							}else {
-								comment.setContent("삭제된 댓글입니다.");
-							}
-						}
-					}
-				}
+				comments = blindCommentProcessing(auth, comments);
 				Viewlog viewlog = new Viewlog(request, post); 
 				if(ViewlogService.viewlogging(viewlog)) {
 					PostService.increase_views(pid);
@@ -230,6 +212,28 @@ public class PostController implements Controller {
 		post.setTitle(title);
 		post.setContent(content);
 		return post;
+	}
+	private Post blindPostProcessing(Auth auth,Post post){
+		String content = post.getContent();
+		post.setContent("원래 제목 : "+post.getTitle()+"<br>"+post.getContent());
+		post.setTitle("이 게시글은 삭제된 게시글입니다.");
+		content = Secure.check_script(content);
+		post.setContent(content);
+		return post;
+	}
+	private ArrayList<ArrayList<Comment>> blindCommentProcessing(Auth auth,ArrayList<ArrayList<Comment>> comments){
+		for(ArrayList<Comment> child_comments : comments) {
+			for(Comment comment : child_comments) {
+				if(comment.isBlind()) {
+					if(AuthManager.canManageBoard(auth, board)) {
+						comment.setContent("삭제된 댓글입니다. 내용은 다음과 같습니다.\n"+comment.getContent());
+					}else {
+						comment.setContent("삭제된 댓글입니다.");
+					}
+				}
+			}
+		}
+		return comments;
 	}
 	
 	private void read_many(HttpServletRequest request, HttpServletResponse response)
