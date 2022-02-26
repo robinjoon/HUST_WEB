@@ -5,6 +5,9 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 import db.DB;
+import exceptions.CreateCommentException;
+import exceptions.DeleteCommentFailException;
+import exceptions.UpdateCommentFailException;
 import vo.*;
 public class CommentDAO {
 	private static CommentDAO dao;
@@ -15,7 +18,7 @@ public class CommentDAO {
 		}
 		return dao;
 	}
-	public boolean write_comment(Comment comment) { //댓글작성. 보안고려 X
+	public void write_comment(Comment comment) { //댓글작성. 보안고려 X
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -27,33 +30,12 @@ public class CommentDAO {
 			pstmt.setString(3, comment.getContent());
 			pstmt.setLong(4, comment.getParent());
 			pstmt.executeUpdate();
-			return true;
 		}catch(Exception e) {
-			System.err.println(e);
-			return false;
+			throw new CreateCommentException("sql 에러");
 		}
 	}
-	/*public boolean write_comment2(CommentVO comment) { //댓글작성. 보안고려 X
-		Connection conn = DB.getConnection();
-		PreparedStatement pstmt = null;
-		try {
-			String sql = "insert into comments(pid,writer,content,parent,cid,write_date)";
-			sql = sql + " values(?,?,?,?,?,?)";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, comment.getPid());
-			pstmt.setString(2, comment.getWriter());
-			pstmt.setString(3, comment.getContent());
-			pstmt.setLong(4, comment.getParent());
-			pstmt.setLong(5, comment.getCid());
-			pstmt.setTimestamp(6, comment.getWrite_date());
-			pstmt.executeUpdate();
-			return true;
-		}catch(Exception e) {
-			System.err.println(e);
-			return false;
-		}
-	}*/
-	public boolean update_comment(Comment comment) { // 댓글 수정. 보안고려 X
+
+	public void update_comment(Comment comment) { // 댓글 수정. 보안고려 X
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -64,17 +46,16 @@ public class CommentDAO {
 			pstmt.setLong(2, comment.getCid());
 			pstmt.setString(3, comment.getWriter());
 			pstmt.setLong(4, comment.getParent());
-			if(pstmt.executeUpdate()!=0)
-				return true;
-			else
-				return false;
+			if(pstmt.executeUpdate()==0){
+				throw new UpdateCommentFailException("업데이트 실패");
+			}
 		}catch(Exception e) {
 			System.err.println(e);
-			return false;
+			throw new UpdateCommentFailException("업데이트 실패");
 		}
 	}
 	
-	public boolean delete_comment(Comment comment) { // 댓글 삭제. 실제로는 댓글을 비활성화 하는 것.
+	public void delete_comment(Comment comment) { // 댓글 삭제. 실제로는 댓글을 비활성화 하는 것.
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -83,13 +64,12 @@ public class CommentDAO {
 			pstmt.setLong(1, comment.getCid());
 			pstmt.setString(2, comment.getWriter());
 			System.out.println(comment.getCid() + " "+ comment.getWriter());
-			if(pstmt.executeUpdate()==1) {
-				return true;
+			if(pstmt.executeUpdate()==0) {
+				throw new DeleteCommentFailException("sql 에러");
 			}
-			return false;
 		}catch(Exception e) {
 			System.err.println(e);
-			return false;
+			throw new DeleteCommentFailException("sql 에러");
 		}
 	}
 	
@@ -105,20 +85,13 @@ public class CommentDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				Comment comment = new Comment();
-				comment.setPid(rs.getInt("pid"));
-				comment.setCid(rs.getLong("cid"));
-				comment.setParent(rs.getLong("parent"));
-				comment.setWriter(rs.getString("writer"));
-				comment.setContent(rs.getString("content"));
-				comment.setWrite_date(rs.getTimestamp("write_date"));
-				comment.setBlind(rs.getBoolean("blind"));
+				Comment comment = new Comment(rs);
 				commentlist.add(comment);
 			}
 			return commentlist;
 		}catch(Exception e) {
 			System.err.println(e);
-			return null;
+			return new ArrayList<Comment>();
 		}
 	}
 	
@@ -148,14 +121,7 @@ public class CommentDAO {
 		}
 		ArrayList<Comment> tmp = new ArrayList<Comment>(); // 자식댓글 임시저장하는 리스트
 		while(rs.next()) { // 자식댓글들을 임시저장 리스트에 저장.
-			Comment comment = new Comment();
-			comment.setPid(rs.getInt("pid"));
-			comment.setParent(rs.getLong("parent"));
-			comment.setCid(rs.getLong("cid"));
-			comment.setWriter(rs.getString("writer"));
-			comment.setContent(rs.getString("content"));
-			comment.setWrite_date(rs.getTimestamp("write_date"));
-			comment.setBlind(rs.getBoolean("blind"));
+			Comment comment = new Comment(rs);
 			tmp.add(comment);
 		}
 		for(int i=0;i<tmp.size();i++) { // 임시저장리스트로부터 자식댓글들을 각자의 부모댓글이 포함된 리스트로 옮김.
@@ -179,20 +145,14 @@ public class CommentDAO {
 			pstmt.setLong(1,cid);
 			
 			ResultSet rs = pstmt.executeQuery();
-			Comment comment = new Comment();
+			Comment comment = Comment.INVALID_COMMENT;
 			while(rs.next()) {
-				comment.setPid(rs.getInt("pid"));
-				comment.setCid(rs.getLong("cid"));
-				comment.setParent(rs.getLong("parent"));
-				comment.setWriter(rs.getString("writer"));
-				comment.setContent(rs.getString("content"));
-				comment.setWrite_date(rs.getTimestamp("write_date"));
-				comment.setBlind(rs.getBoolean("blind"));
+				comment = new Comment(rs);
 			}
 			return comment;
 		}catch(Exception e) {
 			System.err.println(e);
-			return null;
+			return Comment.INVALID_COMMENT;
 		}
 	}
 	public ArrayList<Comment> getMyComments(String id){ //내가 쓴 댓글 불러오기.
@@ -207,20 +167,13 @@ public class CommentDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				Comment comment = new Comment();
-				comment.setPid(rs.getInt("pid"));
-				comment.setCid(rs.getLong("cid"));
-				comment.setParent(rs.getLong("parent"));
-				comment.setWriter(rs.getString("writer"));
-				comment.setContent(rs.getString("content"));
-				comment.setWrite_date(rs.getTimestamp("write_date"));
-				comment.setBlind(rs.getBoolean("blind"));
+				Comment comment = new Comment(rs);
 				commentlist.add(comment);
 			}
 			return commentlist;
 		}catch(Exception e) {
 			System.err.println(e);
-			return null;
+			return new ArrayList<Comment>();
 		}
 	}
 }

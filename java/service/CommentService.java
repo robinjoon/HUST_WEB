@@ -6,17 +6,17 @@ import dao.CommentDAO;
 import vo.Comment;
 
 public class CommentService {
-	public static boolean write(Comment comment) {
+	public static void write(Comment comment) {
 		CommentDAO dao = CommentDAO.getInstance();
-		return dao.write_comment(comment);
+		dao.write_comment(comment);
 	}
-	public static boolean modify(Comment comment) {
+	public static void modify(Comment comment) {
 		CommentDAO dao = CommentDAO.getInstance();
-		return dao.update_comment(comment);
+		dao.update_comment(comment);
 	}
-	public static boolean delete(Comment comment) {
+	public static void delete(Comment comment) {
 		CommentDAO dao = CommentDAO.getInstance();
-		return dao.delete_comment(comment);
+		dao.delete_comment(comment);
 	}
 	public static ArrayList<ArrayList<Comment>> getCommentList_v2(int pid) throws Exception{
 		CommentDAO dao = CommentDAO.getInstance();

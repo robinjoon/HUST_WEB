@@ -31,4 +31,8 @@ public class BoardService {
 		BoardDAO dao = BoardDAO.getInstance();
 		return dao.getBoard(board_name);
 	}
+	public static Board getBoard(int postID){
+		BoardDAO dao = BoardDAO.getInstance();
+		return dao.getBoard(postID);
+	}
 }
