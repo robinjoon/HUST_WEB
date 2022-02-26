@@ -26,7 +26,7 @@ public class Auth {
 		this.permission = Permission.intToPermission(permission);
 	}
 	
-	public Auth(HttpServletRequest request) throws Exception {
+	public Auth(HttpServletRequest request){
 		HttpSession session = request.getSession();
 		String id = (String)session.getAttribute("id");
 		Permission permission = Permission.intToPermission((Integer)session.getAttribute("permission"));
