@@ -19,14 +19,14 @@ public class BoardService {
 		BoardDAO dao = BoardDAO.getInstance();
 		return dao.update_board(board);
 	}
-	public static HashMap<String,Integer> getPermissions_by_Pid(int pid){
+	/*public static HashMap<String,Integer> getPermissions_by_Pid(int pid){
 		BoardDAO dao = BoardDAO.getInstance();
 		return dao.getPermissions_by_Pid(pid);
 	}
 	public static HashMap<String,Integer> getPermissions_by_name(String board_name){
 		BoardDAO dao = BoardDAO.getInstance();
 		return dao.getPermissions_by_name(board_name);
-	}
+	}*/
 	public static Board getBoard(String board_name){
 		BoardDAO dao = BoardDAO.getInstance();
 		return dao.getBoard(board_name);
