@@ -1,8 +1,13 @@
 // 게시판의 정보를 저장하는 클래스
 package vo;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import javax.servlet.http.HttpServletRequest;
 
+import exceptions.CreateBoardException;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -10,9 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
+@Setter(value = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
-@NoArgsConstructor
+
 public class Board implements VO{ 
 	
 	@NonNull
@@ -38,10 +43,43 @@ public class Board implements VO{
 		this.setBoard_description(board_description);
 	}
 	
+	public Board(ResultSet rs) {
+		try {
+			this.setBoard_name(rs.getString("board_name"));
+			this.setReadPermission(Permission.intToPermission(rs.getInt("read_permission")));
+			this.setWritePermission(Permission.intToPermission(rs.getInt("write_permission")));
+			this.setManagePermission(Permission.intToPermission(rs.getInt("manage_permission")));
+			this.setCommentPermission(Permission.intToPermission(rs.getInt("comment_permission")));
+			this.setBoard_description(rs.getString("board_description"));
+		}catch(SQLException e) {
+			throw new CreateBoardException("sql 에러"); 
+		}
+	}
+	
+	public Board() {
+		this.board_description ="";
+		this.board_name="";
+		this.commentPermission = Permission.INVALID;
+		this.managePermission = Permission.INVALID;
+		this.readPermission = Permission.INVALID;
+		this.writePermission = Permission.INVALID;
+	}
+	
 	@Override
 	public String toJson() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean isInvalid() {
+		if(board_name == "" || board_description == "" || commentPermission == Permission.INVALID
+				|| managePermission == Permission.INVALID || readPermission == Permission.INVALID
+				|| writePermission == Permission.INVALID) {
+			return true;
+		}else {
+			return false;
+		}
 	}
 	
 }

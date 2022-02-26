@@ -3,7 +3,6 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 import db.DB;
@@ -98,17 +97,32 @@ public class BoardDAO {
 			ResultSet rs = pstmt.executeQuery();
 			Board board = new Board();
 			while(rs.next()) {
-				board.setBoard_name(rs.getString("board_name"));
-				board.setReadPermission(Permission.intToPermission(rs.getInt("read_permission")));
-				board.setWritePermission(Permission.intToPermission(rs.getInt("write_permission")));
-				board.setManagePermission(Permission.intToPermission(rs.getInt("manage_permission")));
-				board.setCommentPermission(Permission.intToPermission(rs.getInt("comment_permission")));
-				board.setBoard_description(rs.getString("board_description"));
+				board = new Board(rs);
 			}
 			return board;
 		}catch(Exception e) {
 			e.printStackTrace();;
-			return null;
+			return new Board();
+		}
+	}
+	public Board getBoard(int postId) {
+		Connection conn = DB.getConnection();
+		PreparedStatement pstmt = null;
+		try {
+			String sql = "select * from boardlist where board_name = (select board_name from posts where pid = ?)";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1,postId);
+			
+			ResultSet rs = pstmt.executeQuery();
+			Board board = new Board();
+			while(rs.next()) {
+				board = new Board(rs);
+			}
+			return board;
+		}catch(Exception e) {
+			e.printStackTrace();;
+			return new Board();
 		}
 	}
 	public LinkedList<Board> getBoardlist(int per){
@@ -123,74 +137,13 @@ public class BoardDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				Board board = new Board();
-				board.setBoard_name(rs.getString("board_name"));
-				board.setReadPermission(Permission.intToPermission(rs.getInt("read_permission")));
-				board.setWritePermission(Permission.intToPermission(rs.getInt("write_permission")));
-				board.setManagePermission(Permission.intToPermission(rs.getInt("manage_permission")));
-				board.setCommentPermission(Permission.intToPermission(rs.getInt("comment_permission")));
-				board.setBoard_description(rs.getString("board_description"));
+				Board board = new Board(rs);
 				boardlist.add(board);
 			}
 			return boardlist;
 		}catch(Exception e) {
 			e.printStackTrace();;
 			return null;
-		}
-	}
-	
-	public HashMap<String,Integer> getPermissions_by_name(String board_name){ // 없는 게시판이면 8을 반환
-		HashMap<String,Integer> per_map = new HashMap<String,Integer>();
-		per_map.put("read", 8);
-		per_map.put("write", 8);
-		per_map.put("manage", 8);
-		per_map.put("comment", 8);
-		Connection conn = DB.getConnection();
-		PreparedStatement pstmt = null;
-		try {
-			String sql = "select read_permission,write_permission,manage_permission,comment_permission from boardlist where board_name = ?";
-			
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1,board_name);
-			ResultSet rs = pstmt.executeQuery();
-			while(rs.next()) {
-				per_map.replace("read", rs.getInt(1));
-				per_map.replace("write",rs.getInt(2));
-				per_map.replace("manage", rs.getInt(3));
-				per_map.replace("comment", rs.getInt(4));
-			}
-			return per_map;
-		}catch(Exception e) {
-			System.err.println(e);
-			return per_map;
-		}
-	}
-	
-	public HashMap<String,Integer> getPermissions_by_Pid(int pid){ // 없는 게시판이면 8을 반환
-		HashMap<String,Integer> per_map = new HashMap<String,Integer>();
-		per_map.put("read", 8);
-		per_map.put("write", 8);
-		per_map.put("manage", 8);
-		per_map.put("comment", 8);
-		Connection conn = DB.getConnection();
-		PreparedStatement pstmt = null;
-		try {
-			String sql = "select read_permission,write_permission,manage_permission,comment_permission from boardlist "
-					+ "where board_name = (select board_name from posts where pid=?)";
-			
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1,pid);
-			ResultSet rs = pstmt.executeQuery();
-			while(rs.next()) {
-				per_map.replace("read", rs.getInt(1));
-				per_map.replace("write",rs.getInt(2));
-				per_map.replace("manage", rs.getInt(3));
-				per_map.replace("comment", rs.getInt(4));
-			}
-			return per_map;
-		}catch(Exception e) {
-			System.err.println(e);
-			return per_map;
 		}
 	}
 }
