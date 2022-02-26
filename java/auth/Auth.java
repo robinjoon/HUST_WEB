@@ -12,6 +12,7 @@ import vo.Permission;
 @RequiredArgsConstructor
 public class Auth {
 	@NonNull
+	@Getter(value = AccessLevel.PACKAGE)
 	private String id;
 	@NonNull
 	@Getter

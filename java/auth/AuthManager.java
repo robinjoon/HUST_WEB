@@ -94,4 +94,20 @@ public class AuthManager {
 			return false;
 		}
 	}
+	
+	public static boolean isWriter(Auth auth, Post post) {
+		if(auth.getId().equals(post.getWriter())) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	public static boolean isWriter(Auth auth, Comment comment) {
+		if(auth.getId().equals(comment.getWriter())) {
+			return true;
+		}else {
+			return false;
+		}
+	}
 }
