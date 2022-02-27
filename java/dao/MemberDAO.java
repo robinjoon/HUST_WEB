@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import tools.Secure;
 import db.DB;
+import exceptions.LoginFailException;
 import vo.Member;
 import vo.Permission;
 
@@ -144,30 +145,12 @@ public class MemberDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				member.setId(rs.getString("id"));
-				member.setName(rs.getString("name"));
-				member.setBirthY(rs.getInt("birthY"));
-				member.setAdmissionY(rs.getInt("admissionY"));
-				member.setJoinY(rs.getInt("joinY"));
-				member.setSchool_year(rs.getInt("school_year"));
-				member.setPhone(rs.getString("phone"));
-				member.setEmail(rs.getString("email"));
-				member.setScholastic(rs.getString("scholastic"));
-				member.setInterest(rs.getString("interest"));
-				member.setAddress(rs.getString("address"));
-				member.setAddress_now(rs.getString("address_now"));
-				member.setPermission(Permission.intToPermission(rs.getInt("permission")));
-				member.setEtc(rs.getString("etc"));
-				member.setProb_score(rs.getLong("prob_score"));
-				member.setSolved_prob(rs.getString("solved_prob"));
-				member.setMypost_comment_noti_allow(rs.getBoolean("mypost_comment_noti_allow"));
-				member.setMycomment_comment_noti_allow(rs.getBoolean("mycomment_comment_noti_allow"));
-				member.setCall_noti_allow(rs.getBoolean("call_noti_allow"));
+				member = new Member(rs);
 			}
 			return member;
 		}catch(Exception e) {
 			System.err.println(e);
-			return null;
+			return new Member();
 		}
 	}
 	
@@ -188,32 +171,13 @@ public class MemberDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				Member member = new Member();
-				member.setId(rs.getString("id"));
-				member.setName(rs.getString("name"));
-				member.setBirthY(rs.getInt("birthY"));
-				member.setAdmissionY(rs.getInt("admissionY"));
-				member.setJoinY(rs.getInt("joinY"));
-				member.setSchool_year(rs.getInt("school_year"));
-				member.setPhone(rs.getString("phone"));
-				member.setEmail(rs.getString("email"));
-				member.setScholastic(rs.getString("scholastic"));
-				member.setInterest(rs.getString("interest"));
-				member.setAddress(rs.getString("address"));
-				member.setAddress_now(rs.getString("address_now"));
-				member.setPermission(Permission.intToPermission(rs.getInt("permission")));
-				member.setEtc(rs.getString("etc"));
-				member.setProb_score(rs.getLong("prob_score"));
-				member.setSolved_prob(rs.getString("solved_prob"));
-				member.setMypost_comment_noti_allow(rs.getBoolean("mypost_comment_noti_allow"));
-				member.setMycomment_comment_noti_allow(rs.getBoolean("mycomment_comment_noti_allow"));
-				member.setCall_noti_allow(rs.getBoolean("call_noti_allow"));
+				Member member = new Member(rs);
 				memberlist.add(member);
 			}
 			return memberlist;
 		}catch(Exception e) {
 			System.err.println(e);
-			return null;
+			return new ArrayList<Member>();
 		}
 	}
 	public ArrayList<Member> getMemberList(int permission){ //특정그룹(YB,OB) 멤버 전치 가져오기
@@ -232,32 +196,13 @@ public class MemberDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				Member member = new Member();
-				member.setId(rs.getString("id"));
-				member.setName(rs.getString("name"));
-				member.setBirthY(rs.getInt("birthY"));
-				member.setAdmissionY(rs.getInt("admissionY"));
-				member.setJoinY(rs.getInt("joinY"));
-				member.setSchool_year(rs.getInt("school_year"));
-				member.setPhone(rs.getString("phone"));
-				member.setEmail(rs.getString("email"));
-				member.setScholastic(rs.getString("scholastic"));
-				member.setInterest(rs.getString("interest"));
-				member.setAddress(rs.getString("address"));
-				member.setAddress_now(rs.getString("address_now"));
-				member.setPermission(Permission.intToPermission(rs.getInt("permission")));
-				member.setEtc(rs.getString("etc"));
-				member.setProb_score(rs.getLong("prob_score"));
-				member.setSolved_prob(rs.getString("solved_prob"));
-				member.setMypost_comment_noti_allow(rs.getBoolean("mypost_comment_noti_allow"));
-				member.setMycomment_comment_noti_allow(rs.getBoolean("mycomment_comment_noti_allow"));
-				member.setCall_noti_allow(rs.getBoolean("call_noti_allow"));
+				Member member = new Member(rs);
 				memberlist.add(member);
 			}
 			return memberlist;
 		}catch(Exception e) {
 			System.err.println(e);
-			return null;
+			return new ArrayList<Member>();
 		}
 	}
 	public ArrayList<Member> getMemberList(int permission,String group){ //특정그룹(YB,OB) 멤버 전체 가져오기
@@ -280,32 +225,13 @@ public class MemberDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				Member member = new Member();
-				member.setId(rs.getString("id"));
-				member.setName(rs.getString("name"));
-				member.setBirthY(rs.getInt("birthY"));
-				member.setAdmissionY(rs.getInt("admissionY"));
-				member.setJoinY(rs.getInt("joinY"));
-				member.setSchool_year(rs.getInt("school_year"));
-				member.setPhone(rs.getString("phone"));
-				member.setEmail(rs.getString("email"));
-				member.setScholastic(rs.getString("scholastic"));
-				member.setInterest(rs.getString("interest"));
-				member.setAddress(rs.getString("address"));
-				member.setAddress_now(rs.getString("address_now"));
-				member.setPermission(Permission.intToPermission(rs.getInt("permission")));
-				member.setEtc(rs.getString("etc"));
-				member.setProb_score(rs.getLong("prob_score"));
-				member.setSolved_prob(rs.getString("solved_prob"));
-				member.setMypost_comment_noti_allow(rs.getBoolean("mypost_comment_noti_allow"));
-				member.setMycomment_comment_noti_allow(rs.getBoolean("mycomment_comment_noti_allow"));
-				member.setCall_noti_allow(rs.getBoolean("call_noti_allow"));
+				Member member = new Member(rs);
 				memberlist.add(member);
 			}
 			return memberlist;
 		}catch(Exception e) {
 			System.err.println(e);
-			return null;
+			return new ArrayList<Member>();
 		}
 	}
 	
@@ -323,35 +249,16 @@ public class MemberDAO {
 			pstmt.setString(3,input);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				Member member = new Member();
-				member.setId(rs.getString("id"));
-				member.setName(rs.getString("name"));
-				member.setBirthY(rs.getInt("birthY"));
-				member.setAdmissionY(rs.getInt("admissionY"));
-				member.setJoinY(rs.getInt("joinY"));
-				member.setSchool_year(rs.getInt("school_year"));
-				member.setPhone(rs.getString("phone"));
-				member.setEmail(rs.getString("email"));
-				member.setScholastic(rs.getString("scholastic"));
-				member.setInterest(rs.getString("interest"));
-				member.setAddress(rs.getString("address"));
-				member.setAddress_now(rs.getString("address_now"));
-				member.setPermission(Permission.intToPermission(rs.getInt("permission")));
-				member.setEtc(rs.getString("etc"));
-				member.setProb_score(rs.getLong("prob_score"));
-				member.setSolved_prob(rs.getString("solved_prob"));
-				member.setMypost_comment_noti_allow(rs.getBoolean("mypost_comment_noti_allow"));
-				member.setMycomment_comment_noti_allow(rs.getBoolean("mycomment_comment_noti_allow"));
-				member.setCall_noti_allow(rs.getBoolean("call_noti_allow"));
+				Member member = new Member(rs);
 				memberlist.add(member);
 			}
 			return memberlist;
 		}catch(Exception e) {
 			System.err.println(e);
-			return null;
+			return new ArrayList<Member>();
 		}
 	}	
-	public int login_member(Member member) throws Exception { 
+	public Permission login_member(Member member){ 
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
@@ -362,17 +269,14 @@ public class MemberDAO {
 			pstmt.setString(2, Secure.sha256(Secure.MD5(member.getPw()).toUpperCase()));
 			
 			ResultSet rs = pstmt.executeQuery();
-			int per =-1;
+			Permission permission = Permission.INVALID;
 			while(rs.next()) {
-				per = rs.getInt("permission");
+				permission = Permission.valueOf(rs.getString(1));
 			}
-			if(per==-1) {
-				throw new Exception("login fail");
-			}
-			return per;
+			return permission;
 		}catch(Exception e) {
 			e.printStackTrace();
-			throw new Exception("login fail");
+			throw new LoginFailException("sql 에러");
 		}
 	}
 	public boolean update_per(Member member,int per) {

@@ -1,18 +1,24 @@
 // 회원 정보를 저장하는 클래스
 package vo;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import javax.servlet.http.HttpServletRequest;
 
+import exceptions.CreateMemberFaliException;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import tools.HttpUtil;
 
 @Getter
-@Setter
+@Setter(value = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public class Member implements VO{
-	
+	@NonNull
 	private String id; // 회원 id
 	private String pw; // 회원 비번(해싱된)
 	private String name; // 회원 이름
@@ -125,12 +131,55 @@ public class Member implements VO{
 		this.prob_score = prob_score;
 	}
 
-	public Member() {}
+	public Member(ResultSet rs) {
+		try {
+			this.setId(rs.getString("id"));
+			this.setName(rs.getString("name"));
+			this.setBirthY(rs.getInt("birthY"));
+			this.setAdmissionY(rs.getInt("admissionY"));
+			this.setJoinY(rs.getInt("joinY"));
+			this.setSchool_year(rs.getInt("school_year"));
+			this.setPhone(rs.getString("phone"));
+			this.setEmail(rs.getString("email"));
+			this.setScholastic(rs.getString("scholastic"));
+			this.setInterest(rs.getString("interest"));
+			this.setAddress(rs.getString("address"));
+			this.setAddress_now(rs.getString("address_now"));
+			this.setPermission(Permission.intToPermission(rs.getInt("permission")));
+			this.setEtc(rs.getString("etc"));
+			this.setProb_score(rs.getLong("prob_score"));
+			this.setSolved_prob(rs.getString("solved_prob"));
+			this.setMypost_comment_noti_allow(rs.getBoolean("mypost_comment_noti_allow"));
+			this.setMycomment_comment_noti_allow(rs.getBoolean("mycomment_comment_noti_allow"));
+			this.setCall_noti_allow(rs.getBoolean("call_noti_allow"));
+		}catch(SQLException e) {
+			throw new CreateMemberFaliException("sql 에러");
+		}
+	}
+	
+	public Member() {
+		this.id="invalid";
+		this.permission = Permission.INVALID;
+	}
 
+	public Member(String id, String pw) {
+		this.id = id;
+		this.pw = pw;
+	}
+	
 	@Override
 	public String toJson() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean isInvalid() {
+		if(this.id.equals("invalid") && this.permission == Permission.INVALID) {
+			return true;
+		}else {
+			return false;
+		}
 	}
 	
 }

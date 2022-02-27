@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import dao.MemberDAO;
 import vo.Member;
+import vo.Permission;
 
 public class MemberService {
 	public static boolean delete_member(Member member) {
@@ -14,7 +15,7 @@ public class MemberService {
 		MemberDAO dao = MemberDAO.getInstance();
 		return dao.join_member(member);
 	}
-	public static int login(Member member) throws Exception {
+	public static Permission login(Member member){
 		MemberDAO dao = MemberDAO.getInstance();
 		return dao.login_member(member);
 	}

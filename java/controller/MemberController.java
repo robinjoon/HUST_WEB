@@ -186,8 +186,7 @@ public class MemberController implements Controller {
 		Permission targetOldPermission = MemberService.getMember(id).getPermission(); // 변경대상 회원의 현재 멤버등급.
 		Permission targetPermission = Permission.intToPermission(Integer.parseInt(request.getParameter("edit_per"))); //변경하려는 멤버등급
 		Permission permission = Permission.intToPermission((int)session.getAttribute("permission")); // 로그인된 사용자의 권한
-		Member member = new Member();
-		member.setId(id);
+		Member member = new Member(id);
 		String admin_id = (String)session.getAttribute("id"); // 현재 로그인되어있는 아이디
 		if(isInvalidPermissions(permission, targetOldPermission, targetPermission)) {
 			if(MemberService.update_member_per(member, Permission.permissionToInt(targetPermission))) {//성공
@@ -204,7 +203,7 @@ public class MemberController implements Controller {
 			}
 		}
 	}
-	private boolean isInvalidPermissions(Permission requesterPermission, Permission targetOldPermission, Permission targetPermission) throws Exception{
+	private boolean isInvalidPermissions(Permission requesterPermission, Permission targetOldPermission, Permission targetPermission){
 		int per = Permission.permissionToInt(targetPermission);
 		int old_per = Permission.permissionToInt(targetOldPermission);
 		if(requesterPermission == Permission.GENREAL_ADMIN) {
@@ -226,21 +225,17 @@ public class MemberController implements Controller {
 		}
 	}
 	
-	private void delete(HttpServletRequest request, HttpServletResponse response, Auth auth)
-			throws ServletException, IOException{
+	private void delete(HttpServletRequest request, HttpServletResponse response, Auth auth){
 		
 	}
 	
-	private void login(HttpServletRequest request, HttpServletResponse response, Auth auth)
-			throws ServletException, IOException{
+	private void login(HttpServletRequest request, HttpServletResponse response, Auth auth){
 		String id = request.getParameter("id");
 		String pw = request.getParameter("pw");
-		Member member = new Member();
-		member.setId(id);
-		member.setPw(pw);
+		Member member = new Member(id, pw);
 		HttpSession session = request.getSession();
 		try {
-			int permission = MemberService.login(member);
+			Permission permission = MemberService.login(member);
 			session.setAttribute("id", id);
 			session.setAttribute("permission",permission);
 			String csrf_token ="";
@@ -259,7 +254,7 @@ public class MemberController implements Controller {
 		}
 	}
 	
-	private void resetMemberPassword(HttpServletRequest request, HttpServletResponse response, Auth auth) throws IOException {
+	private void resetMemberPassword(HttpServletRequest request, HttpServletResponse response, Auth auth){
 		String id = request.getParameter("id");
 		Member member = MemberService.getMember(id);
 		Permission memberPermission = member.getPermission();
