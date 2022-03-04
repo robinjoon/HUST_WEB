@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -31,7 +33,6 @@ import service.NotiService;
 import service.PostService;
 import service.ViewlogService;
 import tools.HttpUtil;
-import tools.Secure;
 
 public class PostController implements Controller {
 	private Board board;
@@ -53,7 +54,7 @@ public class PostController implements Controller {
 					}
 				}else {
 					if(action.contentEquals("getPostlist")) { // 게시글 목록가져오기
-						read_many(request,response);
+						read_many(request,response,auth);
 					}else if(action.contentEquals("getPost")) { // 게시글 하나 가져오기
 						read(request,response,auth);
 					}else if(action.contentEquals("filedownload")){
@@ -74,11 +75,12 @@ public class PostController implements Controller {
 		String board_name = post.getBoard_name();
 		board = BoardService.getBoard(board_name);
 		if(!AuthManager.canManageBoard(auth, board)) {
-			post.set_notice(false);
+			Post.deleteNotice(post);
 		}
 		boolean is_notice = post.is_notice();
 		if(AuthManager.canWriteBoard(auth, board)) {
 			int pid = PostService.writepost_v2(post);
+			Post.addPid(post, pid);
 			if(is_notice && AuthManager.canManageBoard(auth, board)) {
 				senNotification(request, post);
 			}
@@ -93,31 +95,12 @@ public class PostController implements Controller {
 	}
 	private Post uploadFileAndGetPostFromRequest(HttpServletRequest request) throws Exception {
 		HttpSession session = request.getSession();
-		String id = (String)session.getAttribute("id");
+		String writer = (String)session.getAttribute("id");
 		String savePath = getSavePathWhenCreate(request);
 		int sizeLimit = 1024*1024*40; // 파일 최대 크기. 현재 40M
 		MultipartRequest multi = new MultipartRequest(request, savePath,sizeLimit,"UTF-8",
 				new DefaultFileRenamePolicy()); // 파일업로드 실행.
-		String writer = multi.getParameter("writer");
-		String board_name = multi.getParameter("board_name");
-		String title = multi.getParameter("title");
-		String content = multi.getParameter("content");
-		String origin_file_name = multi.getOriginalFileName("file");
-		String system_file_name = multi.getFilesystemName("file");
-		if(writer.isBlank()||board_name.isBlank()||title.isBlank()||content.isBlank()) {
-			System.out.println(content);
-			throw new Exception("no required data");
-		}
-		boolean is_notice = Boolean.parseBoolean(multi.getParameter("is_notice"));		
-		Post post = new Post();
-		post.setWriter(id);
-		post.setBoard_name(board_name);
-		post.setTitle(title);
-		post.setContent(Secure.check_script(content));
-		post.setContent(post.getContent().replaceAll("<img ", "<img class='w-100' "));
-		post.setOrigin_file_name(origin_file_name!=null ? origin_file_name : ""); // 첨부파일이 없을 때 첨부파일의 이름을 공백으로 설정. 안하면 pid 가져오는 쿼리에서 null로인해 정상적인 값을 가져오지 못함. 
-		post.setSystem_file_name(system_file_name!=null ? system_file_name : "");
-		post.set_notice(is_notice);
+		Post post = new Post(multi, writer);
 		return post;
 	}
 	private String getSavePathWhenCreate(HttpServletRequest request) {
@@ -150,20 +133,11 @@ public class PostController implements Controller {
 		return savePath;
 	}
 	private void senNotification(HttpServletRequest request, Post post) {
-		int pid = post.getPid();
-		String boardName = post.getBoard_name();
 		ArrayList<Member> memberlist = MemberService.getMemberList(7, "전체");
 		for(Member member : memberlist) {
 			if(!member.getScholastic().contentEquals("탈퇴") && AuthManager.canReadBoard(new Auth(member.getId(),member.getPermission()), board)) { // 탈퇴회원이나 게스트가 아닌사람에게만 알림 보냄.
-				Noti noti = new Noti();
-				String id = (String)request.getSession().getAttribute("id");
-				noti.setSender(id);
-				noti.setReceiver(member.getId());
-				noti.setTitle(boardName+"에 새 공지가 등록되었습니다.");
-				noti.setBody(post.getContent());
-				noti.setUrl("postview.do?pid="+pid+"&board_name="+boardName);
-				noti.setDate(new java.sql.Date(new java.util.Date().getTime()));
-				noti.setNotice(true);
+				String receiver = member.getId();
+				Noti noti = Noti.getNoticeNoti(post, receiver);
 				NotiService.send_noti(noti);
 			}
 		}
@@ -179,7 +153,7 @@ public class PostController implements Controller {
 		}else {
 			if(post.isBlind()) { // 게시글이 삭제된 경우
 				if(AuthManager.canManageBoard(auth, board)) {
-					post = blindPostProcessing(auth, post);
+					Post.blindPostProcessing(auth, post);
 					request.setAttribute("post", post);
 					ArrayList<ArrayList<Comment>> comments = CommentService.getCommentList_v2(pid);
 					comments = blindCommentProcessing(auth, comments);
@@ -189,7 +163,7 @@ public class PostController implements Controller {
 					HttpUtil.forward(request, response, "/WEB-INF/pages/fail.jsp");
 				}
 			}else { // 게시글이 삭제되지 않은 경우
-				post = checkCsrf(post);
+				Post.checkCsrf(post);
 				request.setAttribute("post", post);
 				ArrayList<ArrayList<Comment>> comments = CommentService.getCommentList_v2(pid);
 				comments = blindCommentProcessing(auth, comments);
@@ -204,31 +178,15 @@ public class PostController implements Controller {
 			}
 		}
 	}
-	private Post checkCsrf(Post post) {
-		String title = post.getTitle();
-		String content = post.getContent();
-		title = Secure.check_input(title);
-		content = Secure.check_script(content);
-		post.setTitle(title);
-		post.setContent(content);
-		return post;
-	}
-	private Post blindPostProcessing(Auth auth,Post post){
-		String content = post.getContent();
-		post.setContent("원래 제목 : "+post.getTitle()+"<br>"+post.getContent());
-		post.setTitle("이 게시글은 삭제된 게시글입니다.");
-		content = Secure.check_script(content);
-		post.setContent(content);
-		return post;
-	}
+	
 	private ArrayList<ArrayList<Comment>> blindCommentProcessing(Auth auth,ArrayList<ArrayList<Comment>> comments){
 		for(ArrayList<Comment> child_comments : comments) {
 			for(Comment comment : child_comments) {
 				if(comment.isBlind()) {
 					if(AuthManager.canManageBoard(auth, board)) {
-						comment.setContent("삭제된 댓글입니다. 내용은 다음과 같습니다.\n"+comment.getContent());
+						Comment.removeBlindForAdmin(comment);
 					}else {
-						comment.setContent("삭제된 댓글입니다.");
+						Comment.blindComment(comment);
 					}
 				}
 			}
@@ -236,133 +194,70 @@ public class PostController implements Controller {
 		return comments;
 	}
 	
-	private void read_many(HttpServletRequest request, HttpServletResponse response)
+	private void read_many(HttpServletRequest request, HttpServletResponse response,Auth auth)
 			throws ServletException, IOException{
-		String bname = request.getParameter("board_name");
-		HttpSession session = request.getSession();
-		int per = (Integer)session.getAttribute("permission");
-		if(per<BoardService.getPermissions_by_name(bname).get("read")) { // 읽기권한 있는 게시판인지 확인
+		String boardName = request.getParameter("board_name");
+		Board board = BoardService.getBoard(boardName);
+		if(!AuthManager.canReadBoard(auth, board)) { // 읽기권한 있는 게시판인지 확인
 			response.sendRedirect("index.jsp");
 		}
-		Integer page = Integer.parseInt(request.getParameter("page"));
-		ArrayList<Post> postlist = PostService.getPostlist(bname,page);
-		int now = page;
-		int total = postlist.size()/10;
-		if(postlist.size()%10!=0)
-			total++;
-		int start, end;
-		if(now>total) {
-			now =1;
-			start =1; 
-			end = total>10 ? 10 :total;
-		}else {
-			if(now%10!=0) {
-				start = (int)(Math.floor((double)now /10))*10 + 1;
-				end = (int)(Math.ceil((double)now /10))*10;
-			}else {
-				start = (int)(Math.floor((double)(now-1) /10))*10 + 1;
-				end = now;
-			}
-			if(end>total) {
-				end = total;
-			}
+		Map<String, String> boardDescription = makeBoardDescription(request);
+		for(String key : boardDescription.keySet()) {
+			request.setAttribute(key,boardDescription.get(key));
 		}
-		int manage_per = BoardService.getPermissions_by_name(bname).get("manage");
-		String manage="";
-		switch(manage_per) {
-		case 4:
-			manage="YB 운영자";
-			break;
-		case 5:
-			manage="OB 운영자";
-			break;
-		case 6:
-			manage="관리자";
-			break;
-		case 7:
-			manage="YB/OB 공동관리";
-			break;
-		}
-		int wp = BoardService.getPermissions_by_name(bname).get("write");
-		int rp = BoardService.getPermissions_by_name(bname).get("read");
-		int cp = BoardService.getPermissions_by_name(bname).get("comment");
-		String read="",write="",comment="";
-		switch(rp){
-		case 1: 
-			read = "신입회원이상";
-			break;
-		case 2: 
-			read = "정회원이상";
-			break;
-		case 3: 
-			read = "OB회원이상";
-			break;
-		case 4: 
-			read = "YB운영진이상";
-			break;
-		case 5: 
-			read = "OB운영진이상";
-			break;
-		case 6: 
-			read = "관리자이상";
-			break;
-		}
-		switch(wp){
-		case 1: 
-			write = "신입회원이상";
-			break;
-		case 2: 
-			write = "정회원이상";
-			break;
-		case 3: 
-			write = "OB회원이상";
-			break;
-		case 4: 
-			write = "YB운영진이상";
-			break;
-		case 5: 
-			write = "OB운영진이상";
-			break;
-		case 6: 
-			write = "관리자이상";
-			break;
-		}
-		switch(cp){
-		case 1: 
-			comment = "신입회원이상";
-			break;
-		case 2: 
-			comment = "정회원이상";
-			break;
-		case 3: 
-			comment = "OB회원이상";
-			break;
-		case 4: 
-			comment = "YB운영진이상";
-			break;
-		case 5: 
-			comment = "OB운영진이상";
-			break;
-		case 6: 
-			comment = "관리자이상";
-			break;
-		}
-		request.setAttribute("postlist", postlist);
-		request.setAttribute("board_name",bname);
-		request.setAttribute("total", total);
-		request.setAttribute("now",now);
-		request.setAttribute("start", start);
-		request.setAttribute("end",end);
-		request.setAttribute("manage", manage);
-		request.setAttribute("read", read);
-		request.setAttribute("write", write);
-		request.setAttribute("comment", comment);
+		ArrayList<Post> posts = PostService.getPostlist(boardName,Integer.parseInt(boardDescription.get("nowPage")));
+		request.setAttribute("postlist", posts);
 		HttpUtil.forward(request, response, "WEB-INF/pages/postsview.jsp");
+	}
+	private Map<String,String> makeBoardDescription(HttpServletRequest request){
+		String boardName = request.getParameter("board_name");
+		Board board = BoardService.getBoard(boardName);
+		Integer page = Integer.parseInt(request.getParameter("page"));
+		ArrayList<Post> postlist = PostService.getPostlist(boardName,page);
+		int nowPage = page;
+		int lastPage = postlist.size()/10;
+		if(postlist.size()%10!=0)
+			lastPage++;
+		int startPage, endPage;
+		if(nowPage>lastPage) {
+			nowPage =1;
+			startPage =1; 
+			endPage = lastPage>10 ? 10 :lastPage;
+		}else {
+			if(nowPage%10!=0) {
+				startPage = (int)(Math.floor((double)nowPage /10))*10 + 1;
+				endPage = (int)(Math.ceil((double)nowPage /10))*10;
+			}else {
+				startPage = (int)(Math.floor((double)(nowPage-1) /10))*10 + 1;
+				endPage = nowPage;
+			}
+			if(endPage>lastPage) {
+				endPage = lastPage;
+			}
+		}
+		Permission readPermission = board.getReadPermission();
+		Permission writePermission = board.getWritePermission();
+		Permission commentPermission = board.getCommentPermission();
+		Permission managePermission = board.getManagePermission();
+		String read = Permission.permissionToString(readPermission);
+		String write = Permission.permissionToString(writePermission);
+		String comment = Permission.permissionToString(commentPermission);
+		String manage = Permission.permissionToManageString(managePermission);
+		Map<String,String> boardDescription = new HashMap<>();
+		boardDescription.put("read", read);
+		boardDescription.put("write", write);
+		boardDescription.put("comment", comment);
+		boardDescription.put("manage", manage);
+		boardDescription.put("startPage", startPage+"");
+		boardDescription.put("endPage", endPage+"");
+		boardDescription.put("lastPage", lastPage+"");
+		boardDescription.put("nowPage", nowPage+"");
+		return boardDescription;
 	}
 	
 	private void update(HttpServletRequest request, HttpServletResponse response, Auth auth)
 			throws Exception{
-		Post post = getPostFromRequestWhenUpdate(request);
+		Post post = new Post(request);
 		int pid = post.getPid();
 		String boardName = post.getBoard_name();
 		if(AuthManager.canWriteBoard(auth, board)) { // 수정시 게시판의 쓰기권한이 있는지 확인
@@ -379,26 +274,10 @@ public class PostController implements Controller {
 			HttpUtil.forward(request, response, "/WEB-INF/pages/fail.jsp");
 		}
 	}
-	private Post getPostFromRequestWhenUpdate(HttpServletRequest request) throws Exception {
-		Auth auth = new Auth(request);
-		int pid = Integer.parseInt(request.getParameter("pid"));
-		String board_name = request.getParameter("board_name");
-		String title = request.getParameter("title");
-		String content = request.getParameter("content");
-		boolean is_notice = Boolean.parseBoolean(request.getParameter("is_notice"));
-		Post post = new Post();
-		post.setPid(pid);post.setBoard_name(board_name);
-		post.setTitle(title);post.setContent(content);
-		board = BoardService.getBoard(board_name);
-		if(is_notice && AuthManager.canManageBoard(auth, board)) // 관리자가 아닌 사람이 공지게시글로 설정한 경우 공지가 아니게 변경.
-			is_notice=false;
-		post.set_notice(is_notice);
-		return post;
-	}
 	
 	private void delete(HttpServletRequest request, HttpServletResponse response, Auth auth)
 			throws ServletException, IOException{
-		Post post = getPostFromRequestWhenDelete(request);
+		Post post = Post.getPostFromRequestWhenDelete(request);
 		int pid = post.getPid();
 		String board_name = post.getBoard_name();
 		board = BoardService.getBoard(board_name);
@@ -416,16 +295,6 @@ public class PostController implements Controller {
 			request.setAttribute("forward_url", "postview.do?pid="+pid+"&board_name="+board_name);
 			HttpUtil.forward(request, response, "/WEB-INF/pages/fail.jsp");
 		}
-	}
-	private Post getPostFromRequestWhenDelete(HttpServletRequest request) {
-		int pid = Integer.parseInt(request.getParameter("pid"));
-		String writer = request.getParameter("writer");
-		String board_name = request.getParameter("board_name");
-		Post post = new Post();
-		post.setPid(pid);
-		post.setBoard_name(board_name);
-		post.setWriter(writer);
-		return post;
 	}
 	
 	private void download(HttpServletRequest request,HttpServletResponse response) throws IOException {

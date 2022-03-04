@@ -146,17 +146,7 @@ public class PostDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				post.setPid(rs.getInt("pid"));
-				post.setWriter(rs.getString("writer"));
-				post.setBoard_name(rs.getString("board_name"));
-				post.setTitle(rs.getString("title"));
-				post.setContent(rs.getString("content"));
-				post.setWrite_date(rs.getTimestamp("write_date"));
-				post.set_notice(rs.getBoolean("is_notice"));
-				post.setViews(rs.getLong("views"));
-				post.setOrigin_file_name(rs.getString("origin_file_name"));
-				post.setSystem_file_name(rs.getString("system_file_name"));
-				post.setBlind(rs.getBoolean("blind"));
+				post = new Post(rs);
 			}
 			return post;
 		}catch(Exception e) {
@@ -176,18 +166,7 @@ public class PostDAO {
 			pstmt.setString(1, bname);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				Post post = new Post();
-				post.setPid(rs.getInt("pid"));
-				post.setWriter(rs.getString("writer"));
-				post.setBoard_name(bname);
-				post.setTitle(rs.getString("title"));
-				post.setContent(rs.getString("content"));
-				post.setWrite_date(rs.getTimestamp("write_date"));
-				post.set_notice(rs.getBoolean("is_notice"));
-				post.setViews(rs.getLong("views"));
-				post.setOrigin_file_name(rs.getString("origin_file_name"));
-				post.setSystem_file_name(rs.getString("system_file_name"));
-				post.setBlind(rs.getBoolean("blind"));
+				Post post = new Post(rs);
 				postlist.add(post);
 			}
 			return postlist;
@@ -208,18 +187,7 @@ public class PostDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				Post post = new Post();
-				post.setPid(rs.getInt("pid"));
-				post.setWriter(rs.getString("writer"));
-				post.setBoard_name("공지게시판");
-				post.setTitle(rs.getString("title"));
-				post.setContent(rs.getString("content"));
-				post.setWrite_date(rs.getTimestamp("write_date"));
-				post.set_notice(rs.getBoolean("is_notice"));
-				post.setViews(rs.getLong("views"));
-				post.setOrigin_file_name(rs.getString("origin_file_name"));
-				post.setSystem_file_name(rs.getString("system_file_name"));
-				post.setBlind(rs.getBoolean("blind"));
+				Post post = new Post(rs);
 				list.add(post);
 			}
 			return list;
@@ -239,18 +207,7 @@ public class PostDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				Post post = new Post();
-				post.setPid(rs.getInt("pid"));
-				post.setWriter(rs.getString("writer"));
-				post.setBoard_name("자유게시판");
-				post.setTitle(rs.getString("title"));
-				post.setContent(rs.getString("content"));
-				post.setWrite_date(rs.getTimestamp("write_date"));
-				post.set_notice(rs.getBoolean("is_notice"));
-				post.setViews(rs.getLong("views"));
-				post.setOrigin_file_name(rs.getString("origin_file_name"));
-				post.setSystem_file_name(rs.getString("system_file_name"));
-				post.setBlind(rs.getBoolean("blind"));
+				Post post = new Post(rs);
 				list.add(post);
 			}
 			return list;
@@ -271,18 +228,7 @@ public class PostDAO {
 			pstmt.setString(1, writer);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				Post post = new Post();
-				post.setPid(rs.getInt("pid"));
-				post.setWriter(rs.getString("writer"));
-				post.setBoard_name(rs.getString("board_name"));
-				post.setTitle(rs.getString("title"));
-				post.setContent(rs.getString("content"));
-				post.setWrite_date(rs.getTimestamp("write_date"));
-				post.set_notice(rs.getBoolean("is_notice"));
-				post.setViews(rs.getLong("views"));
-				post.setOrigin_file_name(rs.getString("origin_file_name"));
-				post.setSystem_file_name(rs.getString("system_file_name"));
-				post.setBlind(rs.getBoolean("blind"));
+				Post post = new Post(rs);
 				list.add(post);
 			}
 			return list;
