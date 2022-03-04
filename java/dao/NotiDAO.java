@@ -52,7 +52,6 @@ public class NotiDAO {
 		
 		try {
 			String sql = "UPDATE `hust`.`noti` SET `read`='1' WHERE  `nid`=?"; 
-			// update noti set read=1 where nid=? 로 하니까 작동이 안됨.이유는 모르겠음. helidsql 이라는 프로그램을 이용해 작동하는 쿼리를 알아내 집어넣음.
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, noti.getNid());
 			if(pstmt.executeUpdate()==1) {
@@ -89,29 +88,20 @@ public class NotiDAO {
 	public Noti getNoti(Long nid) {
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
-		Noti noti = new Noti();
 		try {
 			String sql = "select * from noti where nid = ?";
 			
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, nid);
-			
+			Noti noti = new Noti();
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				noti.setNid(nid);
-				noti.setSender(rs.getString("sender"));
-				noti.setReceiver(rs.getString("receiver"));
-				noti.setTitle(rs.getString("title"));
-				noti.setBody(rs.getString("body"));
-				noti.setUrl(rs.getString("url"));
-				noti.setDate(rs.getDate("date"));
-				noti.setRead(rs.getBoolean("read"));
-				noti.setNotice(rs.getBoolean("notice"));
+				noti = new Noti(rs);
 			}
 			return noti;
 		}catch(Exception e) {
 			e.printStackTrace();
-			return null;
+			return new Noti();
 		}
 	}
 	
@@ -127,16 +117,7 @@ public class NotiDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				Noti noti = new Noti();
-				noti.setNid(rs.getLong("nid"));
-				noti.setSender(rs.getString("sender"));
-				noti.setReceiver(rs.getString("receiver"));
-				noti.setTitle(rs.getString("title"));
-				noti.setBody(rs.getString("body"));
-				noti.setUrl(rs.getString("url"));
-				noti.setDate(rs.getDate("date"));
-				noti.setRead(rs.getBoolean("read"));
-				noti.setNotice(rs.getBoolean("notice"));
+				Noti noti = new Noti(rs);
 				list.add(noti);
 			}
 			return list;

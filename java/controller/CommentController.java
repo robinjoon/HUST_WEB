@@ -65,49 +65,24 @@ public class CommentController implements Controller {
 		if(AuthManager.canCommentBoard(auth, board)) { // 쓰기권한 확인
 			try {
 				CommentService.write(comment);
-				if(parent!=-1) {
-					Comment parent_comment = CommentService.getComment(parent);
-					String parent_writer = parent_comment.getWriter();
-					Member parentwriter = MemberService.getMember(parent_writer);
-					if(parentwriter.isMycomment_comment_noti_allow()&&!id.contentEquals(parent_writer)) {
-						Noti noti = new Noti();
-						noti.setSender(id);
-						noti.setReceiver(parent_writer);
-						noti.setTitle("내가 쓴 댓글에 새 대댓글이 등록되었습니다.");
-						noti.setBody(comment.getWriter()+" : "+comment.getContent());
-						noti.setUrl("postview.do?pid="+pid);
-						noti.setDate(new java.sql.Date(new java.util.Date().getTime()));
-						noti.setNotice(false);
-						NotiService.send_noti(noti);
-					}
+				Comment parent_comment = CommentService.getComment(parent);
+				String parent_writer = parent_comment.getWriter();
+				Member parentwriter = MemberService.getMember(parent_writer);
+				if(parentwriter.isMycomment_comment_noti_allow()&&!id.contentEquals(parent_writer)) {
+					Noti noti = Noti.getReplyCommentNoti(comment, parent_writer);
+					NotiService.send_noti(noti);
 				}
 				String post_writer = PostService.getPost(pid).getWriter();
 				Member postwriter = MemberService.getMember(post_writer);
 				if(postwriter.isMypost_comment_noti_allow()&&!id.contentEquals(post_writer)) {
-					Noti noti = new Noti();
-					noti.setSender(id);
-					noti.setReceiver(post_writer);
-					noti.setTitle("내가 쓴 게시글에 새 댓글이 등록되었습니다.");
-					noti.setBody(comment.getWriter()+" : "+comment.getContent());
-					noti.setUrl("postview.do?pid="+pid);
-					noti.setDate(new java.sql.Date(new java.util.Date().getTime()));
-					noti.setNotice(false);
+					Noti noti = Noti.getNewCommentNoti(comment, post_writer);
 					NotiService.send_noti(noti);
 				}
-				if(!taglist.isEmpty()) {
-					for(int i=0;i<taglist.size();i++) {
-						Member member = MemberService.getMember(taglist.get(i));
-						if(member!=null && member.isCall_noti_allow()) {
-							Noti noti = new Noti();
-							noti.setSender(id);
-							noti.setReceiver(taglist.get(i));
-							noti.setTitle(id+"님이 댓글에 태그하셨습니다.");
-							noti.setBody(comment.getContent());
-							noti.setUrl("postview.do?pid="+pid);
-							noti.setDate(new java.sql.Date(new java.util.Date().getTime()));
-							noti.setNotice(false);
-							NotiService.send_noti(noti);
-						}
+				for(String receiver:taglist) {
+					Member member = MemberService.getMember(receiver);
+					if(member!=null && member.isCall_noti_allow()) {
+						Noti noti = Noti.getTagNoti(comment, receiver);
+						NotiService.send_noti(noti);
 					}
 				}
 				request.setAttribute("ok_body", "작성 성공");
