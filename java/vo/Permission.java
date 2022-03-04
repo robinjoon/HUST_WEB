@@ -11,6 +11,56 @@ public enum Permission {
 	GENREAL_ADMIN,
 	YB_OB_ADMIN;
 	
+	public static String permissionToString(Permission permission) {
+		String permissionString="";
+		switch(permission){
+		case NEWBIE: 
+			permissionString = "신입회원이상";
+			break;
+		case YB: 
+			permissionString = "정회원이상";
+			break;
+		case OB: 
+			permissionString = "OB회원이상";
+			break;
+		case YB_ADMIN: 
+			permissionString = "YB운영진이상";
+			break;
+		case OB_ADMIN: 
+			permissionString = "OB운영진이상";
+			break;
+		case GENREAL_ADMIN: 
+			permissionString = "관리자이상";
+			break;
+		default:
+			permissionString = "";
+			break;
+		}
+		return permissionString;
+	}
+	
+	public static String permissionToManageString(Permission permission) {
+		String permissionString="";
+		switch(permission){
+		case YB_ADMIN: 
+			permissionString = "YB운영진";
+			break;
+		case OB_ADMIN: 
+			permissionString = "OB운영진";
+			break;
+		case GENREAL_ADMIN: 
+			permissionString = "관리자";
+			break;
+		case YB_OB_ADMIN :
+			permissionString = "YB/OB 공동관리";
+			break;
+		default:
+			permissionString = "";
+			break;
+		}
+		return permissionString;
+	}
+	
 	public static Permission intToPermission(int permission){
 		switch(permission) {
 		case 0:
