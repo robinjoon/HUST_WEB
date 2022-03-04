@@ -30,6 +30,14 @@ public class Comment implements Comparable<Comment>,VO{
 	private Timestamp write_date; // 댓글작성 시간
 	private boolean blind;
 	
+	public static void removeBlindForAdmin(Comment comment) {
+		comment.setContent("삭제된 댓글입니다. 내용은 다음과 같습니다.\n"+comment.getContent());
+	}
+	
+	public static void blindComment(Comment comment) {
+		comment.setContent("삭제된 댓글입니다.");
+	}
+	
 	@Override
     public int compareTo(Comment c) {
 		int a = this.getWrite_date().compareTo(c.getWrite_date());

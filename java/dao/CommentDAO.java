@@ -136,6 +136,9 @@ public class CommentDAO {
 		return commentlist;
 	}
 	public Comment getComment(long cid) {
+		if(cid == -1) {
+			throw new RuntimeException("Invalid Parent");
+		}
 		Connection conn = DB.getConnection();
 		PreparedStatement pstmt = null;
 		try {
