@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8" import="java.util.*,vo.*,dao.*,service.*,tools.*,listener.*"%>
+	pageEncoding="UTF-8" import="java.util.*,vo.*,dao.*,service.*,tools.*,listener.*,auth.*"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%
 String id = (String) session.getAttribute("id");
@@ -30,6 +30,7 @@ String id = (String) session.getAttribute("id");
 	}
 	ArrayList<HttpSession> sessions = Sessions.getSessions();
   	String csrf_token_s = (String)session.getAttribute("csrf_token");
+  	Auth auth = new Auth(id,permission);
 %>
 
 <!--div class="jumbotron" style="text-align: center;">

@@ -28,4 +28,10 @@ public class Viewlog implements VO {
 		return null;
 	}
 
+	@Override
+	public boolean isInvalid() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

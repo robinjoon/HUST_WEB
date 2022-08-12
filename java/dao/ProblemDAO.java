@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import db.DB;
 import vo.Problem;
 import vo.Member;
-import vo.Permission;
 
 public class ProblemDAO {
 	private static ProblemDAO dao;
@@ -197,24 +196,7 @@ public class ProblemDAO {
 			pstmt = conn.prepareStatement(sql);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				Member member = new Member();
-				member.setId(rs.getString("id"));
-				member.setName(rs.getString("name"));
-				member.setBirthY(rs.getInt("birthY"));
-				member.setAdmissionY(rs.getInt("admissionY"));
-				member.setJoinY(rs.getInt("joinY"));
-				member.setSchool_year(rs.getInt("school_year"));
-				member.setPhone(rs.getString("phone"));
-				member.setEmail(rs.getString("email"));
-				member.setScholastic(rs.getString("scholastic"));
-				member.setInterest(rs.getString("interest"));
-				member.setAddress(rs.getString("address"));
-				member.setAddress_now(rs.getString("address_now"));
-				member.setPermission(Permission.intToPermission(rs.getInt("permission")));
-				member.setEtc(rs.getString("etc"));
-				member.setProb_score(rs.getLong("prob_score"));
-				member.setSolved_prob(rs.getString("solved_prob"));
-				member.setProb_score_time(rs.getTimestamp("prob_score_time"));
+				Member member = new Member(rs);
 				list.add(member);
 			}
 			

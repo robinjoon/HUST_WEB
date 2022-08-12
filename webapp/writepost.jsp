@@ -5,7 +5,7 @@
 <%
 if(!is_login){
 	response.sendRedirect("index.jsp");
-}else if(BoardDAO.getInstance().getPermissions_by_name(request.getParameter("board_name")).get("write")>permission){ // 글쓰기 권한 > 내 권한
+}else if(AuthManager.canWriteBoard(auth, BoardService.getBoard(request.getParameter("board_name")))){ // 글쓰기 권한 > 내 권한
 	response.sendRedirect("postsview.do?board_name="+request.getParameter("board_name")+"&page=1");
 }
 String csrf_token = (String)session.getAttribute("csrf_token");

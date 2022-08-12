@@ -62,7 +62,7 @@ ArrayList<Post> list = (ArrayList<Post>)request.getAttribute("postlist");
 			Post post = list.get(i);
 	%>
 		<%
-		if(post.isIs_notice()){
+		if(post.is_notice()){
 		%><tr class="bg-primary notice">
 			<c:set var="title" value="<%=post.getTitle()%>"/>
 			<c:set var="writer" value="<%=post.getWriter()%>"/>
@@ -79,7 +79,7 @@ ArrayList<Post> list = (ArrayList<Post>)request.getAttribute("postlist");
 	for(int i=(now-1)*10 ;i<=(now*10-1 < list.size()-1 ? now*10-1 : list.size()-1);i++){ // 일반 게시글 출력
 			Post post = list.get(i);
 	%>
-		<%if(!post.isIs_notice()){%><tr>
+		<%if(!post.is_notice()){%><tr>
 			<c:set var="title" value="<%=post.getTitle() %>"/>
 			<c:set var="writer" value="<%=post.getWriter() %>"/>
 			<td><%=post.getPid() %></td>
@@ -106,7 +106,7 @@ ArrayList<Post> list = (ArrayList<Post>)request.getAttribute("postlist");
 			<li class="page-item"><a class="page-link" href="postsview.do?board_name=<c:out value="${board_name}"/>&page=<%=end+1 >=total ? total : end+1%>">&gt;</a></li>
 			<li class="page-item"><a class="page-link" href="postsview.do?board_name=<c:out value="${board_name}"/>&page=<%=total%>">&raquo;</a></li>
 		<%} %>
-		<%if(BoardDAO.getInstance().getPermissions_by_name(board_name).get("write")<=permission){ %>
+		<%if(AuthManager.canWriteBoard(auth, BoardService.getBoard(board_name))){ %>
 			<li class="page-item"><a class="btn btn-success" href="writepost.jsp?board_name=<c:out value="${board_name}"/>">글쓰기</a></li>
 		<%} %>
 	</ul>

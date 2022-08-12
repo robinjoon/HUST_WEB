@@ -30,5 +30,11 @@ public class Schedule implements VO{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public boolean isInvalid() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 }

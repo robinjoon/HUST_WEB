@@ -230,7 +230,7 @@
 								<c:set var="title" value="<%=post.getTitle()%>"/>
 								<c:set var="writer" value="<%=post.getWriter()%>"/>
 					<%
-					if(post.isIs_notice()){
+					if(post.is_notice()){
 					%>
 						<tr class="bg-primary notice">
 							<td><%=post.getPid()%></td>
@@ -270,7 +270,7 @@
 					%>
 						<c:set var="title" value="<%=post.getTitle() %>"/>
 						<c:set var="writer" value="<%=post.getWriter() %>"/>
-					<%if(post.isIs_notice()){ %>
+					<%if(post.is_notice()){ %>
 						<tr class="bg-primary notice">
 							<td><%=post.getPid() %></td>
 							<td><a class="notice" href="postview.do?pid=<%=post.getPid()%>&board_name=자유게시판" class="intable"><c:out value="${title}"/></a></td>

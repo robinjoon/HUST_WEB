@@ -104,7 +104,7 @@ white-space: nowrap;
     	  %>
     	  <!-- Button trigger modal -->
 
-<button type="button" class="btn btn-sm <%if(list.get(k).isIs_ob()){%>btn-primary<%}else{ %>btn-success<%} %> schedule" data-toggle="modal" data-target="#modal<%=k%>">
+<button type="button" class="btn btn-sm <%if(list.get(k).is_ob()){%>btn-primary<%}else{ %>btn-success<%} %> schedule" data-toggle="modal" data-target="#modal<%=k%>">
 <c:set var="title" value="<%=list.get(k).getTitle() %>"/>
 <c:out value="${title}"/>
 </button>

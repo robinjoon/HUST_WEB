@@ -79,29 +79,7 @@
 				<td class="school_year"><%= member.getSchool_year() %></td>
 				<td class="interest"><c:out value="${member_interest}"/></td>
 				<td><%
-					switch(member.getPermission()){
-					case 0: 
-						out.print("게스트");
-						break;
-					case 1: 
-						out.print("신입회원");
-						break;
-					case 2: 
-						out.print("정회원");
-						break;
-					case 3: 
-						out.print("OB회원");
-						break;
-					case 4: 
-						out.print("YB운영진");
-						break;
-					case 5: 
-						out.print("OB운영진");
-						break;
-					case 6: 
-						out.print("관리자");
-						break;
-					}
+					out.print(member.getPermission());
 				%></td>
 				<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#member<c:out value="${member_id}"/>modal">더보기</button></td>
 				<%if(permission>=4){ %>

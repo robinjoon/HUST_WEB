@@ -37,18 +37,7 @@ public class SearchDAO {
 				if(rs.getInt("read_permission")>permission || rs.getBoolean("blind")) {
 					continue;
 				}else {
-					Post post = new Post();
-					post.setPid(rs.getInt("pid"));
-					post.setWriter(rs.getString("writer"));
-					post.setBoard_name(rs.getString("board_name"));
-					post.setTitle(rs.getString("title"));
-					post.setContent(rs.getString("content"));
-					post.setWrite_date(rs.getTimestamp("write_date"));
-					post.set_notice(rs.getBoolean("is_notice"));
-					post.setViews(rs.getLong("views"));
-					post.setOrigin_file_name(rs.getString("origin_file_name"));
-					post.setSystem_file_name(rs.getString("system_file_name"));
-					post.setBlind(rs.getBoolean("blind"));
+					Post post = new Post(rs);
 					search_result.add(post);
 				}
 			}
@@ -76,18 +65,7 @@ public class SearchDAO {
 				if(rs.getInt("read_permission")>permission || rs.getBoolean("blind")) {
 					continue;
 				}else {
-					Post post = new Post();
-					post.setPid(rs.getInt("pid"));
-					post.setWriter(rs.getString("writer"));
-					post.setBoard_name(rs.getString("board_name"));
-					post.setTitle(rs.getString("title"));
-					post.setContent(rs.getString("content"));
-					post.setWrite_date(rs.getTimestamp("write_date"));
-					post.set_notice(rs.getBoolean("is_notice"));
-					post.setViews(rs.getLong("views"));
-					post.setOrigin_file_name(rs.getString("origin_file_name"));
-					post.setSystem_file_name(rs.getString("system_file_name"));
-					post.setBlind(rs.getBoolean("blind"));
+					Post post = new Post(rs);
 					search_result.add(post);
 				}
 			}

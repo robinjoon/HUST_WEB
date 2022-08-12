@@ -187,7 +187,7 @@
 			<div class="form-group">
 				<label for="mypost_comment_noti_allow">내가 작성한 게시글에 달린 댓글 알림 허용</label> <span class="badge badge-secondary">선택</span>
 				<select class="form-control" name="mypost_comment_noti_allow" id="mypost_comment_noti_allow">
-					<%if(member.getMypost_comment_noti_allow()){ %>
+					<%if(member.isMypost_comment_noti_allow()){ %>
 					<option value="true" selected>허용</option>
 					<option value="false">거부</option>
 					<%}else{ %>
@@ -199,7 +199,7 @@
 			<div class="form-group">
 				<label for="mycomment_comment_noti_allow">내가 작성한 댓글(대댓글)에 달린 대댓글 알림 허용</label> <span class="badge badge-secondary">선택</span>
 				<select class="form-control" name="mycomment_comment_noti_allow" id="mycomment_comment_noti_allow">
-					<%if(member.getMycomment_comment_noti_allow()){ %>
+					<%if(member.isMycomment_comment_noti_allow()){ %>
 					<option value="true" selected>허용</option>
 					<option value="false">거부</option>
 					<%}else{ %>
@@ -211,7 +211,7 @@
 			<div class="form-group">
 				<label for="call_noti_allow">댓글로 자신을 호출(태그)하는 것을 허용</label> <span class="badge badge-secondary">선택</span>
 				<select class="form-control" name="call_noti_allow" id="call_noti_allow">
-					<%if(member.getCall_noti_allow()){ %>
+					<%if(member.isCall_noti_allow()){ %>
 					<option value="true" selected>허용</option>
 					<option value="false">거부</option>
 					<%}else{ %>

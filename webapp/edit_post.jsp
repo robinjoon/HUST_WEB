@@ -29,7 +29,7 @@
 				<select class="form-control" name="board_name" id="board_name">
 				<%
 				for(int i=0;i<boardlist.size();i++){
-				if(boardlist.get(i).getWrite_permission()>permission)continue;
+				if(AuthManager.canWriteBoard(auth, boardlist.get(i)))continue;
 				%>
 				<c:set var="board_name" value="<%=boardlist.get(i).getBoard_name() %>"/>
 					<%if(boardlist.get(i).getBoard_name().contentEquals(board_name)){%>

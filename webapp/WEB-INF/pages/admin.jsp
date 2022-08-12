@@ -144,7 +144,7 @@ String csrf_token = (String)session.getAttribute("csrf_token");
 		for(int i = 0; i < boardlist.size(); i++) {
 		%>
 			<%
-			if(boardlist.get(i).getManage_permission()==per || per==6){
+			if(AuthManager.canManageBoard(auth, boardlist.get(i))){
 			%>
 			<li class="list-group-item"><%=boardlist.get(i).getBoard_name()%>
 				<a class='btn btn-danger btn-sm' href='delete_board.do?board_name=<%=boardlist.get(i).getBoard_name()%>&csrf_token=<%=csrf_token%>' role='button' >삭제</a>
