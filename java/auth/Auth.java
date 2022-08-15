@@ -5,16 +5,11 @@ import javax.servlet.http.HttpSession;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import vo.Permission;
 
-@RequiredArgsConstructor
 public class Auth {
-	@NonNull
 	@Getter(value = AccessLevel.PACKAGE)
 	private String id;
-	@NonNull
 	@Getter
 	private Permission permission;
 	
@@ -26,16 +21,25 @@ public class Auth {
 		this.permission = Permission.intToPermission(permission);
 	}
 	
-	public Auth(HttpServletRequest request){
-		HttpSession session = request.getSession();
-		String id = (String)session.getAttribute("id");
-		Permission permission = Permission.intToPermission((Integer)session.getAttribute("permission"));
-		String server = (String)session.getAttribute("csrf_token");
-		String client = request.getParameter("csrf_token");
+	public Auth(String id, Permission permission){
 		this.id = id;
 		this.permission = permission;
-		this.csrfServer = server;
-		this.csrfClient = client;
+	}
+	
+	public Auth(HttpServletRequest request){
+		try {
+			HttpSession session = request.getSession();
+			String id = (String)session.getAttribute("id");
+			Permission permission = (Permission)session.getAttribute("permission");
+			String server = (String)session.getAttribute("csrf_token");
+			String client = request.getParameter("csrf_token");
+			this.id = id;
+			this.permission = permission;
+			this.csrfServer = server;
+			this.csrfClient = client;
+		}catch(Exception e) {
+			
+		}
 	}
 	
 	boolean isLogin() {

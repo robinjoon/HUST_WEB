@@ -207,6 +207,7 @@ public class PostController implements Controller {
 		}
 		ArrayList<Post> posts = PostService.getPostlist(boardName,Integer.parseInt(boardDescription.get("nowPage")));
 		request.setAttribute("postlist", posts);
+		request.setAttribute("boardDescription", boardDescription);
 		HttpUtil.forward(request, response, "WEB-INF/pages/postsview.jsp");
 	}
 	private Map<String,String> makeBoardDescription(HttpServletRequest request){

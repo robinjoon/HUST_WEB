@@ -32,6 +32,7 @@
 	String csrf_token = (String)session.getAttribute("csrf_token");
 	int manage= (int)request.getAttribute("manage_per");
 	int comment_per = (int)request.getAttribute("comment_per");
+	Board board = BoardService.getBoard(post.getPid());
 %>
 <c:set var="title" value="<%=post.getTitle() %>"/>
 <c:set var="writer" value="<%=post.getWriter() %>"/>
@@ -55,7 +56,7 @@
 		<%if(session.getAttribute("id").equals(post.getWriter())){ %>
 			<a type="button" class="btn btn-warning float-right" href="edit_post.jsp?pid=<%=post.getPid()%>&writer=<c:out value="${writer}"/>&board_name=<c:out value="${board_name}"/>">게시글 수정</a>
 		<%} %>
-		<%if(session.getAttribute("id").equals(post.getWriter())||per == manage||per==6||(manage==7&&permission>=4)){ %>
+		<%if(AuthManager.isWriter(auth, post)||AuthManager.canManageBoard(auth, board)){ %>
 			<a type="button" class="btn btn-danger float-right" href="delete_post.do?pid=<%=post.getPid()%>&writer=<c:out value="${writer}"/>&board_name=<c:out value="${board_name}"/>&csrf_token=<%=csrf_token%>">게시글 삭제</a>
 		<%} %>
 			<a type="button" class="btn btn-primary " href="postsview.do?board_name=<c:out value="${board_name}"/>&page=1">글목록</a>
@@ -106,7 +107,7 @@
     			<input type="hidden" value="<c:out value="${c_writer}"/>" name="writer">
     			<input type="hidden" value=<%=comment.getCid() %> name="cid">
     			<input type="hidden" value="<%=csrf_token %>" name="csrf_token">
-    		<%if(!comment.isBlind() && (session.getAttribute("id").equals(comment.getWriter())||per == manage||per==6||(manage==7&&permission>=4))){ %>
+    		<%if(!comment.isBlind() && (AuthManager.isWriter(auth, comment)||AuthManager.canManageBoard(auth, board))){ %>
     			<input type="hidden" name="csrf_token" value="<%=csrf_token %>">
     			<button id="delete<%=comment.getCid() %>" class="btn btn-danger btn-sm" type="submit">삭제</button>
     		<%} %>
@@ -175,7 +176,7 @@
 		    			<input type="hidden" value="<c:out value="${c_writer}"/>" name="writer">
 		    			<input type="hidden" value=<%=comment.getCid() %> name="cid">
 		    			<input type="hidden" value="<%=csrf_token %>" name="csrf_token">
-		    		<%if(!comment.isBlind() && (session.getAttribute("id").equals(comment.getWriter())||per == manage||per==6||(manage==7&&permission>=4))){ %>
+		    		<%if(!comment.isBlind() && (AuthManager.isWriter(auth, comment)||AuthManager.canManageBoard(auth, board))){ %>
 		    			<input type="hidden" name="csrf_token" value="<%=csrf_token %>">
 		    			<button id="delete<%=comment.getCid() %>" class="btn btn-danger btn-sm" type="submit">삭제</button>
 		    		<%} %>

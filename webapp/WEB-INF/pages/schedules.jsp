@@ -5,9 +5,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <%
-if(!is_login || per==0){
-	response.sendRedirect("index.jsp");
-}
 ArrayList<Schedule> list = (ArrayList<Schedule>)request.getAttribute("schedules");
 
 Calendar cal = Calendar.getInstance(); // 서버시간

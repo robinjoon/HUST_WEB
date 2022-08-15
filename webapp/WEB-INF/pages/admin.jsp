@@ -3,9 +3,6 @@
 <%@ include file="../semipage/header.jsp" %>
 <%@ include file="../semipage/nav.jsp" %>
 <%
-if(!is_admin){
-		response.sendRedirect("index.jsp");
-	}
 String csrf_token = (String)session.getAttribute("csrf_token");
 %>
 <div class="inmain d-none">
@@ -38,7 +35,7 @@ String csrf_token = (String)session.getAttribute("csrf_token");
 				<label for="read_permission">읽기권한</label> 
 				<select class="form-control" name="rp" id="rp">
 					<%
-					if(per==6){
+					if(AuthManager.isGenrealAdmin(auth)){
 					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
@@ -47,13 +44,13 @@ String csrf_token = (String)session.getAttribute("csrf_token");
 					<option value=5>OB운영진</option>
 					<option value=6>관리자</option>
 					<%
-					}else if(per==4){
+					}else if(AuthManager.isYBAdmin(auth)){
 					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
 					<option value=4>YB운영진</option>
 					<%
-					}else{
+					}else if(AuthManager.isOBAdmin(auth)){
 					%>
 					<option value=3>OB회원</option>
 					<option value=5>OB운영진</option>
@@ -64,7 +61,7 @@ String csrf_token = (String)session.getAttribute("csrf_token");
 				<label for="write_permission">쓰기권한</label> 
 				<select class="form-control" name="wp" id="wp">
 					<%
-					if(per==6){
+					if(AuthManager.isGenrealAdmin(auth)){
 					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
@@ -73,13 +70,13 @@ String csrf_token = (String)session.getAttribute("csrf_token");
 					<option value=5>OB운영진</option>
 					<option value=6>관리자</option>
 					<%
-					}else if(per==4){
+					}else if(AuthManager.isYBAdmin(auth)){
 					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
 					<option value=4>YB운영진</option>
 					<%
-					}else{
+					}else if(AuthManager.isOBAdmin(auth)){
 					%>
 					<option value=3>OB회원</option>
 					<option value=5>OB운영진</option>
@@ -90,25 +87,7 @@ String csrf_token = (String)session.getAttribute("csrf_token");
 				<label for="manage_permission">관리권한</label> 
 				<select class="form-control" name="mp" id="mp">
 					<%
-					if(per==6){
-					%>
-					<option value=4>YB운영진</option>
-					<option value=5>OB운영진</option>
-					<option value=6>관리자</option>
-					<option value=7>YB/OB공동관리</option>
-					<%
-					}else{
-					%>
-					<option value=<%=per%>><%=per%></option>
-					<option value=7>YB/OB공동관리</option>
-					<%
-					}
-					%>
-				</select>
-				<label for="comment_permission">댓글권한</label> 
-				<select class="form-control" name="cp" id="cp">
-					<%
-					if(per==6){
+					if(AuthManager.isGenrealAdmin(auth)){
 					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
@@ -117,13 +96,36 @@ String csrf_token = (String)session.getAttribute("csrf_token");
 					<option value=5>OB운영진</option>
 					<option value=6>관리자</option>
 					<%
-					}else if(per==4){
+					}else if(AuthManager.isYBAdmin(auth)){
+					%>
+					<option value=4>YB운영진</option>
+					<%
+					}else if(AuthManager.isOBAdmin(auth)){
+					%>
+					<option value=5>OB운영진</option>
+					<%
+					}
+					%>
+				</select>
+				<label for="comment_permission">댓글권한</label> 
+				<select class="form-control" name="cp" id="cp">
+					<%
+					if(AuthManager.isGenrealAdmin(auth)){
+					%>
+					<option value=1>신입회원</option>
+					<option value=2>정회원</option>
+					<option value=3>OB회원</option>
+					<option value=4>YB운영진</option>
+					<option value=5>OB운영진</option>
+					<option value=6>관리자</option>
+					<%
+					}else if(AuthManager.isYBAdmin(auth)){
 					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
 					<option value=4>YB운영진</option>
 					<%
-					}else{
+					}else if(AuthManager.isOBAdmin(auth)){
 					%>
 					<option value=3>OB회원</option>
 					<option value=5>OB운영진</option>
@@ -179,68 +181,104 @@ String csrf_token = (String)session.getAttribute("csrf_token");
 				<textarea class="form-control" name="board_description" id="board_description" placeholder="게시판 설명"></textarea>
 				<label for="read_permission">읽기권한</label> 
 				<select class="form-control" name="rp" id="rp">
-					<%if(per==6){ %>
+					<%
+					if(AuthManager.isGenrealAdmin(auth)){
+					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
 					<option value=3>OB회원</option>
 					<option value=4>YB운영진</option>
 					<option value=5>OB운영진</option>
 					<option value=6>관리자</option>
-					<%}else if(per==4){ %>
+					<%
+					}else if(AuthManager.isYBAdmin(auth)){
+					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
 					<option value=4>YB운영진</option>
-					<%}else{ %>
+					<%
+					}else if(AuthManager.isOBAdmin(auth)){
+					%>
 					<option value=3>OB회원</option>
 					<option value=5>OB운영진</option>
-					<%} %>
+					<%
+					}
+					%>
 				</select>
 				<label for="write_permission">쓰기권한</label> 
 				<select class="form-control" name="wp" id="wp">
-					<%if(per==6){ %>
+					<%
+					if(AuthManager.isGenrealAdmin(auth)){
+					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
 					<option value=3>OB회원</option>
 					<option value=4>YB운영진</option>
 					<option value=5>OB운영진</option>
 					<option value=6>관리자</option>
-					<%}else if(per==4){ %>
+					<%
+					}else if(AuthManager.isYBAdmin(auth)){
+					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
 					<option value=4>YB운영진</option>
-					<%}else{ %>
+					<%
+					}else if(AuthManager.isOBAdmin(auth)){
+					%>
 					<option value=3>OB회원</option>
 					<option value=5>OB운영진</option>
-					<%} %>
+					<%
+					}
+					%>
 				</select>
 				<label for="manage_permission">관리권한</label> 
 				<select class="form-control" name="mp" id="mp">
-					<%if(per==6){ %>
+					<%
+					if(AuthManager.isGenrealAdmin(auth)){
+					%>
+					<option value=1>신입회원</option>
+					<option value=2>정회원</option>
+					<option value=3>OB회원</option>
 					<option value=4>YB운영진</option>
 					<option value=5>OB운영진</option>
 					<option value=6>관리자</option>
-					<option value=7>YB/OB공동관리</option>
-					<%}else{ %>
-					<option value=<%=per %>><%=per %></option>
-					<%} %>
+					<%
+					}else if(AuthManager.isYBAdmin(auth)){
+					%>
+					<option value=4>YB운영진</option>
+					<%
+					}else if(AuthManager.isOBAdmin(auth)){
+					%>
+					<option value=5>OB운영진</option>
+					<%
+					}
+					%>
 				</select>
 				<label for="comment_permission">댓글권한</label> 
 				<select class="form-control" name="cp" id="cp">
-					<%if(per==6){ %>
+					<%
+					if(AuthManager.isGenrealAdmin(auth)){
+					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
 					<option value=3>OB회원</option>
 					<option value=4>YB운영진</option>
 					<option value=5>OB운영진</option>
 					<option value=6>관리자</option>
-					<%}else if(per==4){ %>
+					<%
+					}else if(AuthManager.isYBAdmin(auth)){
+					%>
 					<option value=1>신입회원</option>
 					<option value=2>정회원</option>
 					<option value=4>YB운영진</option>
-					<%}else{ %>
+					<%
+					}else if(AuthManager.isOBAdmin(auth)){
+					%>
 					<option value=3>OB회원</option>
 					<option value=5>OB운영진</option>
-					<%} %>
+					<%
+					}
+					%>
 				</select>
 				<input type="hidden" name="csrf_token" value="<%=csrf_token %>">
 			<button type="submit" class="btn btn-primary">게시판 생성</button>
@@ -261,7 +299,7 @@ String csrf_token = (String)session.getAttribute("csrf_token");
 jQuery(document).ready(function(){
 	setmain_from_inmain();
 });
-var webSocket = new WebSocket("wss://hust.net/loginlist");
+var webSocket = new WebSocket("ws://hust.net/loginlist");
 var messageTextArea = document.getElementById("connect_member");
 // WebSocket 서버와 접속이 되면 호출되는 함수
 webSocket.onopen = function(message) {

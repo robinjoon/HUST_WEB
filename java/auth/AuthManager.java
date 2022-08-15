@@ -1,15 +1,13 @@
 package auth;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import vo.*;
 
 public class AuthManager {
 	
 	public static boolean canReadMemberList(Auth auth) {
 		Permission memberPermission = auth.getPermission();
-		if(memberPermission.compareTo(Permission.NEWBIE)>=0) {
+		int per = Permission.permissionToInt(memberPermission);
+		if(per>0) {
 			return true;
 		}else {
 			return false;
@@ -105,6 +103,41 @@ public class AuthManager {
 	
 	public static boolean isWriter(Auth auth, Comment comment) {
 		if(auth.getId().equals(comment.getWriter())) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	public static boolean isAdmin(Auth auth) {
+		Permission permission = auth.getPermission();
+		int per = Permission.permissionToInt(permission);
+		if(per >=4) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	public static boolean isYBAdmin(Auth auth) {
+		Permission permission = auth.getPermission();
+		if(permission == Permission.YB_ADMIN) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	public static boolean isOBAdmin(Auth auth) {
+		Permission permission = auth.getPermission();
+		if(permission == Permission.OB_ADMIN) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	public static boolean isGenrealAdmin(Auth auth) {
+		Permission permission = auth.getPermission();
+		if(permission == Permission.GENREAL_ADMIN) {
 			return true;
 		}else {
 			return false;

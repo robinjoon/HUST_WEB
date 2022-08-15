@@ -4,15 +4,16 @@
 <%@ include file="../semipage/nav.jsp" %>
 <%
 ArrayList<Post> list = (ArrayList<Post>)request.getAttribute("postlist");
+Map<String,String> boardDescription =(Map<String,String>)request.getAttribute("boardDescription");
 	String board_name = (String)request.getAttribute("board_name");
-	int total = (int)request.getAttribute("total");
-	int now = (int)request.getAttribute("now");
-	int start = (int)request.getAttribute("start");
-	int end = (int)request.getAttribute("end");
-	String manage = (String)request.getAttribute("manage");
-	String read = (String)request.getAttribute("read");
-	String write = (String)request.getAttribute("write");
-	String comment = (String)request.getAttribute("comment");
+	int total = Integer.parseInt(boardDescription.get("lastPage"));
+	int now = Integer.parseInt(boardDescription.get("nowPage"));
+	int start = Integer.parseInt(boardDescription.get("startPage"));
+	int end = Integer.parseInt(boardDescription.get("endPage"));
+	String manage = boardDescription.get("manage");
+	String read = boardDescription.get("read");
+	String write = boardDescription.get("write");
+	String comment = boardDescription.get("comment");
 	if(!is_login){
 		response.sendRedirect("index.jsp");
 	}

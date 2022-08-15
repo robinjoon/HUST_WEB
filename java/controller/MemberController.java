@@ -138,10 +138,6 @@ public class MemberController implements Controller {
 	
 	private void readMany(HttpServletRequest request,HttpServletResponse response, Auth auth) throws IOException {
 		ArrayList<Member> list = null;
-		if(AuthManager.canReadMemberList(auth)) { // 로그인X
-			response.sendRedirect("index.jsp");
-			return;
-		}
 		String group = request.getParameter("group");
 		Integer permission = -1;
 		if(request.getParameter("permission")!=null) // 에러방지.

@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -14,8 +13,7 @@ import exceptions.CreateCommentException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import service.BoardService;
-import tools.Tag;
+
 @Getter
 @Setter(value = AccessLevel.PRIVATE)
 public class Comment implements Comparable<Comment>,VO{
@@ -86,8 +84,8 @@ public class Comment implements Comparable<Comment>,VO{
 		try {
 			long cid = Long.parseLong(request.getParameter("cid"));
 			comment.setCid(cid);
-		}catch(NullPointerException e) {
-			
+		}catch(Exception e) {
+			comment.setCid(-1);
 		}
 	}
 	

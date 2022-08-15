@@ -271,7 +271,7 @@ public class MemberDAO {
 			ResultSet rs = pstmt.executeQuery();
 			Permission permission = Permission.INVALID;
 			while(rs.next()) {
-				permission = Permission.valueOf(rs.getString(1));
+				permission = Permission.intToPermission(rs.getInt("permission"));
 			}
 			return permission;
 		}catch(Exception e) {

@@ -2,22 +2,20 @@
 	pageEncoding="UTF-8" import="java.util.*,vo.*,dao.*,service.*,tools.*,listener.*,auth.*"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%
+boolean is_login = false;
+boolean is_admin = false;
 String id = (String) session.getAttribute("id");
-	Integer per = (Integer) session.getAttribute("permission");
-	int permission = -1;
-	boolean is_login = false;
-	boolean is_admin = false;
-	if (id != null && per != null) {
-		is_login = true;
-		permission = per.intValue();
-		if (per >= 4) {
-	is_admin = true;
+	Permission per = (Permission)session.getAttribute("permission");
+	if(id!=null && per != null){
+		is_login=true;
+		if(Permission.permissionToInt(per)>=4){
+			is_admin=true;
 		}
 	}
 	LinkedList<Board> boardlist = new LinkedList<Board>();
 	BoardDAO dao = BoardDAO.getInstance();
 	if (is_login) {
-		boardlist = dao.getBoardlist(permission);
+		boardlist = dao.getBoardlist(Permission.permissionToInt(per));
 	}
 	ArrayList<Noti> notis = (ArrayList<Noti>)NotiService.getNotiList(id);
 	int unread_noti_count =0;
@@ -30,7 +28,14 @@ String id = (String) session.getAttribute("id");
 	}
 	ArrayList<HttpSession> sessions = Sessions.getSessions();
   	String csrf_token_s = (String)session.getAttribute("csrf_token");
-  	Auth auth = new Auth(id,permission);
+  	Auth auth = new Auth(id,per);
+  	Integer permission;
+  	try{
+  		permission = Permission.permissionToInt(per);
+  	}catch(Exception e){
+  		permission = -1;
+  	}
+
 %>
 
 <!--div class="jumbotron" style="text-align: center;">
@@ -107,7 +112,7 @@ String id = (String) session.getAttribute("id");
         <a class="nav-link" href="logout.jsp?csrf_token=<%=csrf_token_s%>">로그아웃</a>
       </li>
       <%} %>
-      <%if(permission>=4){ %>
+      <%if(is_admin){ %>
       <li class="nav-item">
         <a class="nav-link" href="admin.do">관리자 페이지</a>
       </li>
