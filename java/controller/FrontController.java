@@ -43,18 +43,19 @@ public class FrontController extends HttpServlet {
 
 	private void initUriMaps() {
 		// PostController
-		uriControllerMap.put("/postsview.do", new PostController());
+		uriControllerMap.put("/postsview.do", new PostControllerNeedLogin());
 		uriMethodMap.put("/postsview.do", "getPostlist");
-		uriControllerMap.put("/postview.do", new PostController());
+		uriControllerMap.put("/postview.do", new PostControllerNeedLogin());
 		uriMethodMap.put("/postview.do", "getPost");
-		uriControllerMap.put("/writepost.do", new PostController());
-		uriMethodMap.put("/writepost.do", "write");
-		uriControllerMap.put("/delete_post.do", new PostController());
-		uriMethodMap.put("/delete_post.do", "delete_post");
-		uriControllerMap.put("/edit_post.do", new PostController());
-		uriMethodMap.put("/edit_post.do", "edit_post");
-		uriControllerMap.put("/download.do", new PostController());
+		uriControllerMap.put("/download.do", new PostControllerNeedLogin());
 		uriMethodMap.put("/download.do", "filedownload");
+		
+		uriControllerMap.put("/writepost.do", new PostControllerNeedCSRFCheck());
+		uriMethodMap.put("/writepost.do", "write");
+		uriControllerMap.put("/delete_post.do", new PostControllerNeedCSRFCheck());
+		uriMethodMap.put("/delete_post.do", "delete_post");
+		uriControllerMap.put("/edit_post.do", new PostControllerNeedCSRFCheck());
+		uriMethodMap.put("/edit_post.do", "edit_post");
 
 		// MemberController
 		uriControllerMap.put("/login.do", new MemberController());
