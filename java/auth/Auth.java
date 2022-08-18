@@ -51,7 +51,7 @@ public class Auth {
 	}
 	
 	boolean isSafeFromCSRF() {
-		if(csrfServer==null || csrfClient==null) {
+		if(!isLogin() || csrfServer==null || csrfClient==null) {
 			return false;
 		}else {
 			return csrfServer.contentEquals(csrfClient);

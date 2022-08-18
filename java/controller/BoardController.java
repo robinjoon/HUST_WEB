@@ -11,22 +11,14 @@ import auth.AuthManager;
 import service.BoardService;
 import vo.Board;
 import tools.HttpUtil;
-public class BoardController implements Controller {
+public class BoardController implements Controller,NeedAdmin,NeedCSRFCheck{
 
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response, String action)
 			throws ServletException, IOException {
 		try {
 			Auth auth = new Auth(request);
-			
-			if(!AuthManager.loginCheck(auth)) {
-				HttpUtil.forward(request, response, "index.jsp");
-			}else if(!AuthManager.csrfCheck(auth)) {
-				request.setAttribute("err_body", "csrf 토큰이 일치하지 않습니다. 알맞은 접근으로 시도하세요.");
-				request.setAttribute("forward_url", "index.jsp");
-				HttpUtil.forward(request, response, "/WEB-INF/pages/fail.jsp");
-			}
-			
+
 			if(action.contentEquals("create_board")) {
 				create(request,response,auth);
 			}else if(action.contentEquals("delete_board")) {

@@ -12,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import auth.Auth;
 import auth.AuthManager;
@@ -60,18 +61,20 @@ public class FrontController extends HttpServlet {
 		uriMethodMap.put("/login.do", "login");
 		uriControllerMap.put("/join.do", new MemberController());
 		uriMethodMap.put("/join.do", "join");
-		uriControllerMap.put("/mypage.do", new MemberController());
-		uriMethodMap.put("/mypage.do", "myinfo");
-		uriControllerMap.put("/memberlist.do", new MemberController());
-		uriMethodMap.put("/memberlist.do", "memberlist");
-		uriControllerMap.put("/change_myinfo.do", new MemberController());
+		
+		uriControllerMap.put("/change_myinfo.do", new MemberControllerNeedCSRFCheck());
 		uriMethodMap.put("/change_myinfo.do", "change_myinfo");
-		uriControllerMap.put("/update_member_per.do", new MemberController());
+		uriControllerMap.put("/update_member_per.do", new MemberControllerNeedCSRFCheck());
 		uriMethodMap.put("/update_member_per.do", "update_member_per");
-		uriControllerMap.put("/getmember.do", new MemberController());
-		uriMethodMap.put("/getmember.do", "getMember");
-		uriControllerMap.put("/resetpw.do", new MemberController());
+		uriControllerMap.put("/resetpw.do", new MemberControllerNeedCSRFCheck());
 		uriMethodMap.put("/resetpw.do", "reset_member_pw");
+		
+		uriControllerMap.put("/getmember.do", new MemberControllerNeedLogin());
+		uriMethodMap.put("/getmember.do", "getMember");
+		uriControllerMap.put("/memberlist.do", new MemberControllerNeedLogin());
+		uriMethodMap.put("/memberlist.do", "memberlist");
+		uriControllerMap.put("/mypage.do", new MemberControllerNeedLogin());
+		uriMethodMap.put("/mypage.do", "myinfo");
 
 		// MappingController
 		uriControllerMap.put("/admin.do", new MappingController());
@@ -134,28 +137,50 @@ public class FrontController extends HttpServlet {
 	}
 
 	@Override
-	protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		req.setCharacterEncoding(charset);
-		String url = req.getRequestURI(); // 요청으로부터 URI 추출
-		String contextPath = req.getContextPath();
+	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.setCharacterEncoding(charset);
+		String url = request.getRequestURI(); // 요청으로부터 URI 추출
+		String contextPath = request.getContextPath();
 		String path = url.substring(contextPath.length());
 		String action = uriMethodMap.get(path); // 각 컨트롤러가 담당하는 여러 역할 중 하나를 지정.
 		Controller subController = uriControllerMap.get(path);// 추출한 URI를 키로 가지는 컨트롤러 지정
-		Auth auth = new Auth(req);
+		Auth auth = new Auth(request);
+		if(subController instanceof NeedAdmin  ) {
+			if(!AuthManager.isAdmin(auth)) {
+				request.setAttribute("err_body", "운영진만 사용할 수 있는 기능입니다.");
+				request.setAttribute("forward_url", "index.jsp");
+				HttpUtil.forward(request, response, "/WEB-INF/pages/fail.jsp");
+				return;
+			}
+		}
+		if(subController instanceof NeedLogin  ) {
+			if(!AuthManager.loginCheck(auth)) {
+				request.setAttribute("err_body", "로그인이 필요한 기능입니다.");
+				request.setAttribute("forward_url", "login.jsp");
+				request.getSession().invalidate();
+				HttpUtil.forward(request, response, "/WEB-INF/pages/fail.jsp");
+				return;
+			}
+		}
+		if(subController instanceof NeedCSRFCheck  ) {
+			if(!AuthManager.csrfCheck(auth)) {
+				request.setAttribute("err_body", "CSRF 방지 토큰이 일치하지 않습니다.");
+				request.setAttribute("forward_url", "index.jsp");
+				HttpUtil.forward(request, response, "/WEB-INF/pages/fail.jsp");
+				return;
+			}
+		}
+		
 		if(logOutRequired.contains(path)) {
 			if(AuthManager.loginCheck(auth)) {
-				res.sendRedirect("index.jsp");
-			}
-		}else {
-			if(!AuthManager.loginCheck(auth)) {
-				res.sendRedirect("index.jsp");
+				response.sendRedirect("index.jsp");
 			}
 		}
-		if (uriControllerMap == null || action == null) {
-			HttpUtil.forward(req, res, "index.jsp");
+		
+		if (action == null) {
+			HttpUtil.forward(request, response, "index.jsp");
 		} else {
-			subController.execute(req, res, action); // 컨트롤러 실행
+			subController.execute(request, response, action); // 컨트롤러 실행
 		}
 	}
-
 }
